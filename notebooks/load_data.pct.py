@@ -21,7 +21,7 @@
 #
 # DVC Pipeline wurde mit folgendem Befehl eingerichtet:
 # ```
-# dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/test_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
+# dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/valid_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
 # ```
 
 # %%
@@ -85,8 +85,8 @@ model_df.head()
 #
 
 # %%
-train_df, test_df = train_test_split(model_df, random_state=12345, test_size=0.2)
-len(train_df), len(test_df)
+train_df, valid_df = train_test_split(model_df, random_state=12345, test_size=0.2, stratify=model_df["label"])
+len(train_df), len(valid_df)
 
 # %% [markdown]
 # ## Aubereitete Daten ausgeben
@@ -99,5 +99,5 @@ os.makedirs("../data/interim", exist_ok=True)
 
 # %%
 train_df.to_pickle("../data/interim/train_df.pkl")
-test_df.to_pickle("../data/interim/test_df.pkl")
+valid_df.to_pickle("../data/interim/valid_df.pkl")
 outlier_df.to_pickle("../data/interim/outlier_df.pkl")

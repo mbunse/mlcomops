@@ -147,3 +147,6 @@ dvc.lock
 dvc.yaml
 data/
 models/
+
+# mlflow
+mlruns/

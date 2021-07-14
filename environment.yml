@@ -12,5 +12,8 @@ dependencies:
   - scikit-learn
   - doit
   - pandas
+  - mlflow
+  - minio
+  - optuna
   - pip: 
     - openapi-python-client

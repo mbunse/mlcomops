@@ -28,11 +28,24 @@ services:
         environment: 
         - MINIO_ACCESS_KEY=minio-access-key
         - MINIO_SECRET_KEY=minio-secret-key
+        expose:
+        - 9000
         ports:
         - 9000:9000
         volumes:
         - ./docker-compose/minio/data:/data
-
+    
+    mlflow:
+        build: ./docker-compose/mlflow/.
+        environment: 
+        - AWS_ACCESS_KEY_ID=minio-access-key
+        - AWS_SECRET_ACCESS_KEY=minio-secret-key
+        - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
+        - MLFLOW_S3_IGNORE_TLS=true
+        ports:
+        - 5000:5000
+        volumes:
+        - ./docker-compose/mlflow/data:/data
     # modelapi:
     #     build: .
     #     expose:

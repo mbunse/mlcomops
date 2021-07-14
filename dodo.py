@@ -28,10 +28,10 @@ def task_setup_dvc():
 def task_run_steps():
     return {
         "actions": [
-            "dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/test_df.pkl " + \
+            "dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/valid_df.pkl " + \
                 "-o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py",
-            ""
+            "dvc run -n train --force -d ../data/interim/train_df.pkl -d train.pct.py -M ../models/score.json " + \
+                "-o ../models/model.pkl -o ../models/feat_names.json -w notebooks python train.pct.py",
             
-
         ]
     }
