@@ -35,3 +35,17 @@ def task_run_steps():
             
         ]
     }
+
+def task_build_modelapi():
+    return {
+        "actions": [
+            "docker build --network=host --build-arg AWS_ACCESS_KEY_ID=minio-access-key --build-arg AWS_SECRET_ACCESS_KEY=minio-secret-key -t modelapi:latest ."
+        ]
+    }
+
+def task_generate_api():
+    return {
+        "actions":  [
+            "openapi-python-client generate --url http://127.0.0.1:8080/openapi.json"
+        ]
+    }

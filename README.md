@@ -14,18 +14,34 @@ conda env create -f environment.yml
 conda activate mlops
 ```
 
+## Benötigten Komponenten bereitstellen
+
+```
+docker-compose build
+docker-compose up
+```
+
+In [Minio](http://localhost:9000) ein Bucket titanic anlegen.
+
+## DVC initialisieren
+
+```
+dvc init
+dvc remote add -d minio s3://titanic/dvcrepo
+dvc remote modify minio endpointurl http://localhost:9000
+dvc remote modify --local minio access_key_id minio-access-key
+dvc remote modify --local minio secret_access_key minio-secret-key
+```
 ## Datensatz
 
 [Titanic Datensatz von OpenML](https://www.openml.org/d/40945)
 
+Daten laden als dvc Stage anlegen und ausführen:
 ```
-wget https://www.openml.org/data/get_csv/16826755/phpMYEkMl
+dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/valid_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
 ```
 
-Daten per dvc holen:
-```
-dvc pull
-```
+
 
 ## Starten der API:
 
@@ -54,6 +70,11 @@ docker-compose up
 Inspired by [Jeremy Jordan
 A simple solution for monitoring ML systems.
 ](https://www.jeremyjordan.me/ml-monitoring/)
+
+## Monitoring
+
+* [Grafana öffnen](http://localhost:3000)
+* [Prometheus öffen](http://localhost:9090)
 
 ## Referenzen:
 * [fastAPI](https://fastapi.tiangolo.com/)

@@ -126,14 +126,14 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(increase(mlops_model_sentiment_total[$__interval])) by (sentiment)",
+          "expr": "sum(increase(mlops_model_label_total[$__interval])) by (label)",
           "format": "time_series",
           "interval": "",
           "legendFormat": "{{sentiment}}",
           "refId": "A"
         }
       ],
-      "title": "Sentiment",
+      "title": "Label",
       "tooltip": {
         "show": true,
         "showHistogram": false
@@ -415,12 +415,12 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Model Score",
   "uid": "PGUZYQznk",
-  "version": 10
+  "version": 1
 }

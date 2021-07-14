@@ -27,12 +27,10 @@ import sys
 # Vorbereitete Daten werden eingelesen
 
 # %%
-data_df = pd.read_csv("../data/raw/transport-short.csv", header=None, nrows=1000, names=['id', 'kind', 'title', 'link_id', 'parent_id', 'ups', 'downs', 'score',
-       'author', 'num_comments', 'created_utc', 'permalink', 'url', 'text',
-       'level', 'top_parent'])
+test_df = pd.read_pickle("../data/interim/test_df.pkl")
 
 # %%
-data_df.head()
+test_df.head()
 
 # %% [markdown]
 # ## Client Laden
@@ -42,10 +40,10 @@ data_df.head()
 # ```
 
 # %%
-sys.path.append("../sentiment-model-api-client")
-from sentiment_model_api_client import Client
-from sentiment_model_api_client.models import Input, Sentiment
-from sentiment_model_api_client.api.default import predict_post
+sys.path.append("../titanic-survival-model-api-client")
+from titanic_survival_model_api_client import Client
+from titanic_survival_model_api_client.models import Input, Prediction
+from titanic_survival_model_api_client.api.default import predict_post
 
 # %% [markdown]
 # Client definieren
@@ -58,19 +56,16 @@ client = Client(base_url="http://127.0.0.1:8080", timeout=30)
 
 # %%
 # Loop über zufällige Zeilen des DataFrames
-for idx, row in data_df.sample(500).iterrows():
+for idx, row in test_df.drop(columns="label").sample(100).iterrows():
     
-    # Ausschließen von uninteressanten Zeilen
-    if not pd.isna(row["text"]) and row["text"] not in ["[deleted]", "[removed]"]:
-        
-        # Input Daten erzeugen 
-        input = Input(sentence=row["text"])
-        
-        # API aufrufen
-        sentiment = predict_post.sync(client=client, json_body=input)
-        
-        # Daten in DataFrame schreiben
-        data_df.loc[idx, "sentiment"] = sentiment.label
+    # Input Daten erzeugen 
+    input = Input.from_dict(row)
+
+    # API aufrufen
+    prediction = predict_post.sync(client=client, json_body=input)
+
+    # Daten in DataFrame schreiben
+    test_df.loc[idx, "survival"] = prediction.label
 
 # %% [markdown]
 # Ausgabe der Sentiments

@@ -110,7 +110,7 @@ param_grid = {
     "model__max_depth": [2, 3],
     "model__min_samples_leaf": [5, 20]
 }
-grid_search = GridSearchCV(clf, param_grid=param_grid, cv=4, n_jobs=4)
+grid_search = GridSearchCV(clf, param_grid=param_grid, cv=4, n_jobs=4, )
 
 with mlflow.start_run() as run:
     sample_weight = compute_sample_weight("balanced", labels_train)

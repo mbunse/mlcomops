@@ -140,6 +140,12 @@ sentiment-model-api-client/
 # doit
 .doit.*
 
+# mlflow
+mlruns/
+
+# api client
+titanic-survival-model-api-client/
+
 # DVC created during exercises
 .dvc/
 .dvcignore
@@ -148,5 +154,4 @@ dvc.yaml
 data/
 models/
 
-# mlflow
-mlruns/
+

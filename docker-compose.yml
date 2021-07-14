@@ -41,14 +41,13 @@ services:
         - AWS_ACCESS_KEY_ID=minio-access-key
         - AWS_SECRET_ACCESS_KEY=minio-secret-key
         - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
-        - MLFLOW_S3_IGNORE_TLS=true
         ports:
         - 5000:5000
         volumes:
         - ./docker-compose/mlflow/data:/data
-    # modelapi:
-    #     build: .
-    #     expose:
-    #     - 8080
-    #     ports:
-    #     - 8080:8080
+    modelapi: 
+        image: modelapi:latest
+        expose:
+        - 8080
+        ports:
+        - 8080:8080

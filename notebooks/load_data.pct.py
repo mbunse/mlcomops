@@ -59,6 +59,7 @@ data_df.head()
 # | embarked | Einschiffungshafen (C = Cherbourg (FR); Q = Queenstown (IR); S = Southampton (EN))
 # | boat | Rettungsboot (falls überlebt)
 # | body | Leichnam Nummer (wenn nicht überlebt und Leichnam geborgen wurde)
+# | home.dest | Home/Destination
 
 # %% [markdown]
 # Die Spalte `survival` wird als Label gesetzt. Die Spalten `boat` und `body` werden entfernt, da sie direkt mit dem Label verknüpft sind.
