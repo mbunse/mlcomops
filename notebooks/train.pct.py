@@ -15,7 +15,7 @@ import logging
 import datetime
 import json
 import pandas as pd 
-import joblib
+import cloudpickle
 import mlflow
 import os
 from sklearn.utils.class_weight import compute_sample_weight
@@ -26,6 +26,10 @@ from sklearn.impute import SimpleImputer, KNNImputer, MissingIndicator
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn import metrics as skm
+
+from fairlearn.reductions import GridSearch
+from fairlearn.metrics import MetricFrame, selection_rate, false_positive_rate, true_positive_rate, count
 
 # %%
 import sys
@@ -125,13 +129,91 @@ with mlflow.start_run() as run:
 score = report(grid_search, features_train, labels_train, features_test, labels_test)
 score
 
+# %%
+mlflow.sklearn.autolog(disable=True)
+
 # %% [markdown]
-# Auf allen Daten Trainieren
+# ## Fairness Metriken bestimmen
+
+# %%
+y_pred = grid_search.best_estimator_.predict(features_test)
+
+# %%
+metrics = {
+    'accuracy': skm.accuracy_score,
+    'precision': skm.precision_score,
+    'recall': skm.recall_score,
+    'false positive rate': false_positive_rate,
+    'true positive rate': true_positive_rate,
+    'selection rate': selection_rate,
+    'count': count}
+metric_frame = MetricFrame(metrics=metrics,
+                           y_true=labels_test,
+                           y_pred=y_pred,
+                           sensitive_features=features_test["sex"])
+metric_frame.by_group.plot.bar(
+    subplots=True,
+    layout=[3, 3],
+    legend=False,
+    figsize=[12, 8],
+    title="Show all metrics",
+)
+
+# %%
+metric_frame.by_group
+
+# %% [markdown]
+# Nur GridSearch liefert nicht-randomisierte Ergebnisse und erlaubt auch die Ausgabe von Scores.
+
+# %%
+from fairlearn.reductions import ErrorRateParity, GridSearch
+mitigator = GridSearch(grid_search.best_estimator_.steps[-1][1], ErrorRateParity())
+features_train_tf = Pipeline(grid_search.best_estimator_.steps[:-1]).transform(features_train)
+mitigator.fit(features_train_tf, labels_train, sensitive_features=features_train["sex"])
+
+# %% [markdown]
+# Konstruktion einer neuen Pipeline mit mitigiertem Classifier
+
+# %%
+mitigated_clf = Pipeline(grid_search.best_estimator_.steps[:-1] + [("model", mitigator)])
+
+# %%
+metrics = {
+    'accuracy': skm.accuracy_score,
+    'precision': skm.precision_score,
+    'recall': skm.recall_score,
+    'false positive rate': false_positive_rate,
+    'true positive rate': true_positive_rate,
+    'selection rate': selection_rate,
+    'count': count}
+metric_frame = MetricFrame(metrics=metrics,
+                           y_true=labels_test,
+                           y_pred=mitigated_clf.predict(features_test),
+                           sensitive_features=features_test["sex"])
+metric_frame.by_group.plot.bar(
+    subplots=True,
+    layout=[3, 3],
+    legend=False,
+    figsize=[12, 8],
+    title="Show all metrics",
+)
+
+# %%
+metric_frame.by_group
+
+# %% [markdown]
+# ## Auf allen Daten Trainieren
 
 # %%
 sample_weight = compute_sample_weight("balanced", labels)
 clf.set_params(**grid_search.best_params_)
 clf.fit(features, labels, **{"model__sample_weight": sample_weight})
+
+# %%
+mitigator = GridSearch(grid_search.best_estimator_.steps[-1][1], ErrorRateParity())
+features_tf = Pipeline(clf.steps[:-1]).transform(features)
+mitigator.fit(features_tf, labels, sensitive_features=features["sex"])
+clf = Pipeline(clf.steps[:-1] + [("model", mitigator)])
 
 # %% [markdown]
 # ## Ausgaben speichern
@@ -140,7 +222,8 @@ clf.fit(features, labels, **{"model__sample_weight": sample_weight})
 
 # %%
 os.makedirs("../models", exist_ok=True)
-joblib.dump(clf, "../models/model.pkl")
+with open("../models/model.pkl", "wb") as f:
+    cloudpickle.dump(clf, f)
 
 # %% [markdown]
 # Metrik speichern

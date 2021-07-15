@@ -53,7 +53,7 @@ app = FastAPI(
 )
 
 # Prometheus Instrumentator verknüpfen
-instrumentator.instrument(app).expose(app)
+# instrumentator.instrument(app).expose(app)
 
 model_path = "models/model.pkl"
 classifier = joblib.load(model_path)

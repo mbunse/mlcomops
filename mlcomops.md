@@ -55,3 +55,6 @@ In der Praxis können diese Punkte wie folgt gelöst werden:
  
 ## Löschkonzept
 
+## Diskriminierung
+
+Benachteiligungsverbot gemäß [§ 19 AGG](https://www.gesetze-im-internet.de/agg/__19.html). Zulässige differenzierung nach Religion, einer Behinderung, Alters oder sexueller Identität, wenn "diese auf anerkannten Prinzipien risikoadäquater Kalkulation beruht" ([§ 20 Absatz 2 AGG](https://www.gesetze-im-internet.de/agg/__20.html))

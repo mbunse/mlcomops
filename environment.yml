@@ -14,6 +14,7 @@ dependencies:
   - pandas
   - mlflow
   - minio
-  - optuna
+  - fairlearn
+  - cloudpickle
   - pip: 
     - openapi-python-client
