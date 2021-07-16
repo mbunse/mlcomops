@@ -64,7 +64,7 @@ Voraussetzung:
 
 ```
 docker-compose build
-docker-compose up
+docker-compose -f docker-compose.yml -f docker-compose.modelapi.yml up
 ```
 ![Dashboard](images/dashboard.png)
 Inspired by [Jeremy Jordan

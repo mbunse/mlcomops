@@ -1,0 +1,9 @@
+version: "2"
+
+services:
+    modelapi: 
+        image: modelapi:latest
+        expose:
+        - 8080
+        ports:
+        - 8080:8080

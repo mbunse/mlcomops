@@ -45,9 +45,3 @@ services:
         - 5000:5000
         volumes:
         - ./docker-compose/mlflow/data:/data
-    modelapi: 
-        image: modelapi:latest
-        expose:
-        - 8080
-        ports:
-        - 8080:8080
