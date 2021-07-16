@@ -16,5 +16,6 @@ dependencies:
   - minio
   - fairlearn
   - cloudpickle
+  - lime
   - pip: 
     - openapi-python-client

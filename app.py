@@ -1,10 +1,11 @@
+from typing import Tuple, List
 from fastapi import FastAPI, Response
-from fastapi.encoders import jsonable_encoder
 from enum import Enum
 from pydantic import BaseModel, Field
 import joblib
 import numpy as np
 import pandas as pd
+from sklearn.pipeline import Pipeline
 from prometheus_client import Histogram, Counter
 from prometheus_fastapi_instrumentator import Instrumentator, metrics
 from prometheus_fastapi_instrumentator.metrics import Info
@@ -56,8 +57,10 @@ app = FastAPI(
 # instrumentator.instrument(app).expose(app)
 
 model_path = "models/model.pkl"
-classifier = joblib.load(model_path)
-
+pipeline = joblib.load(model_path)
+preprocessor = Pipeline(pipeline.steps[:-1])
+classifier = pipeline.steps[-1][1]
+explainer = joblib.load("models/explainer.pkl")
 class EmbarkedEnum(str, Enum):
     cherbourg = 'C'
     queenstown = 'Q'
@@ -82,16 +85,26 @@ class Prediction(BaseModel):
     label: int = Field(description="Survival", example=1)
     score: float = Field(description="Score", example=0.95)
 
+class Explanation(BaseModel):
+    contributions: List[Tuple[str, float]] = Field()
+
 # Endpunkt für Prediction
-@app.post('/predict', response_model=Prediction, operation_id="predict_post")
-async def predict(response: Response, input: Input):
+@app.post('/predict', response_model=Prediction)
+def predict(response: Response, input: Input):
     df = pd.DataFrame([input.dict(by_alias=True)])
-    pred_probas = classifier.predict_proba(df)[0]
+    pred_probas = pipeline.predict_proba(df)[0]
     survival = np.argmax(pred_probas)
     prediction = Prediction(label=survival, score=pred_probas[survival])
     response.headers["X-model-score"] = str(prediction.score)
     response.headers["X-model-label"] = str(prediction.label)
     return prediction
+
+@app.post('/explain', response_model=Explanation)
+async def explain(input: Input):
+    df = pd.DataFrame([input.dict(by_alias=True)])
+    X_tf = preprocessor.transform(df)
+    explanation = explainer.explain_instance(X_tf[0], classifier.predict_proba)
+    return Explanation(contributions=explanation.as_list())
 
 
 if __name__ == "__main__":

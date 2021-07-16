@@ -32,7 +32,9 @@ def task_run_steps():
                 "-o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py",
             "dvc run -n train --force -d ../data/interim/train_df.pkl -d train.pct.py -M ../models/score.json " + \
                 "-o ../models/model.pkl -o ../models/feat_names.json -w notebooks python train.pct.py",
-            
+            "dvc run -n prepare_explainer --force -d ../models/model.pkl -d ../data/interim/train_df.pkl " + \
+                "-d ../data/interim/test_df.pkl -d ../models/feat_names.json -o ../models/explainer.pkl " + \
+                "-w notebooks python prepare_explainer.pct.py",
         ]
     }
 

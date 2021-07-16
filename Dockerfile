@@ -2,7 +2,8 @@ from bitnami/python:3.8
 
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
-RUN pip install dvc[s3] scikit-learn pandas fairlearn cloudpickle fastapi uvicorn[standard] prometheus-fastapi-instrumentator
+RUN pip install dvc[s3] scikit-learn pandas fairlearn cloudpickle \
+    fastapi uvicorn[standard] prometheus-fastapi-instrumentator lime
 
 COPY .dvc/config .dvc/config
 COPY dvc.yaml .
@@ -12,7 +13,7 @@ COPY app.py .
 RUN dvc config core.no_scm true && \
     dvc remote modify --local minio access_key_id $AWS_ACCESS_KEY_ID && \
     dvc remote modify --local minio secret_access_key $AWS_SECRET_ACCESS_KEY && \
-    dvc pull models/model.pkl
+    dvc pull models/model.pkl models/explainer.pkl 
 
 EXPOSE 8080
 
