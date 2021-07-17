@@ -3,6 +3,7 @@
 # ---
 # jupyter:
 #   jupytext:
+#     formats: py:percent,ipynb
 #     text_representation:
 #       extension: .py
 #       format_name: percent
@@ -15,8 +16,8 @@
 # ---
 
 # %% [markdown]
-# # Model Training
-# Das Model wird nach `model/model.pkl` persistiert.
+# # Modell Training
+# Das Modell wird nach `model/model.pkl` persistiert.
 #
 # dvc Pipeline anlegen:
 # ```
@@ -32,7 +33,7 @@ import pandas as pd
 import cloudpickle
 import mlflow
 import os
-import inspect
+
 import numpy as np
 from sklearn.utils.class_weight import compute_sample_weight
 from sklearn.model_selection import GridSearchCV, train_test_split
@@ -51,7 +52,7 @@ from fairlearn.metrics import MetricFrame, selection_rate, false_positive_rate, 
 import sys
 sys.path.append("../")
 from predict_titanic_survival.data_prep import CustomFeatures
-from predict_titanic_survival.report import report
+from predict_titanic_survival.report import report, get_feature_names
 
 # %% [markdown]
 # ## Einlesen der Daten
@@ -95,75 +96,8 @@ preprocessor = Pipeline(pipeline.steps[:-1])
 X_transformed = preprocessor.fit_transform(features_train, labels_train)
 X_transformed.shape
 
-
 # %% [markdown]
 # Namen der automatisch abgeleiteten Feature extrahieren.
-
-# %%
-def get_feature_names(transformer, parent_feature_names=None):
-    feature_names = parent_feature_names
-    
-    if isinstance(transformer, Pipeline):
-        for _, step in transformer.steps:
-            feature_names = get_feature_names(step, parent_feature_names=feature_names)
-    
-    elif isinstance(transformer, FeatureUnion):
-        feature_names = []
-        for name, trans in transformer.transformer_list:
-            if parent_feature_names is None:
-                parent_feature_names = name
-            feature_names.extend([f"{name}_{item}" for item in get_feature_names(trans, parent_feature_names=parent_feature_names)])
-    
-  
-    elif isinstance(transformer, ColumnTransformer):
-        #check_is_fitted(transformer)
-        feature_names = []
-        for name, trans, column, _ in transformer._iter(fitted=True):
-            if trans == "drop" or (hasattr(column, "__len__") and not len(column)):
-                continue
-            if trans == "passthrough":
-                if hasattr(transformer, "_df_columns"):
-                    if ((not isinstance(column, slice)) and all(isinstance(col, str) for col in column)):
-                        feature_names.extend(column)
-                    else:
-                        feature_names.extend(transformer._df_columns[column])
-                else:
-                    indices = np.arange(transformer._n_features)
-                    feature_names.extend([f'x{i}' for i in indices[column]])
-            else:
-                feature_names.extend(get_feature_names(trans, parent_feature_names=column))
-    
-    elif hasattr(transformer, "get_feature_names"):
-        if parent_feature_names is not None and isinstance(parent_feature_names, slice):
-            raise ValueError()
-        
-        if "input_features" in inspect.getfullargspec(transformer.get_feature_names)[0]:
-            feature_names = transformer.get_feature_names(input_features=parent_feature_names)
-        else:
-            feature_names = transformer.get_feature_names()
-            if parent_feature_names is not None:
-                feature_names = [f'{parent_feature_names}_{feat}' for feat in feature_names]
-    
-    elif hasattr(transformer, "get_support"):
-        if not parent_feature_names:
-            raise ValueError()
-        mask = transformer.get_support()
-        feature_names = (np.array(parent_feature_names)[mask]).tolist()
-    elif hasattr(transformer, "features_"): #MissingIndicator
-        if not parent_feature_names:
-            raise ValueError()
-        feature_names = np.array(parent_feature_names)[transformer.features_]
-    elif hasattr(transformer, "categories_"):
-        feature_names = parent_feature_names
-        #         feature_names = [f"{name} " + ",".join([f"{idx}:{cat}" for idx, cat in enumerate(mapping)]) \
-        #                          for name, mapping in zip(parent_feature_names, transformer.categories_)]
-    elif hasattr(transformer, "clf"):
-        feature_names = transformer.clf.classes_.tolist()
-    else:
-        if parent_feature_names is None:
-            raise ValueError(f"{transformer.__class__} does not provice feature names and no parent feature names are given.")
-        feature_names = parent_feature_names
-    return feature_names
 
 # %%
 feat_names = get_feature_names(pipeline)
