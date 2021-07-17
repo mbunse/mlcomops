@@ -1,5 +1,19 @@
 #!/bin/python
 # -*- coding: utf-8 -*-
+# ---
+# jupyter:
+#   jupytext:
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.4.2
+#   kernelspec:
+#     display_name: Python [conda env:mlops]
+#     language: python
+#     name: conda-env-mlops-py
+# ---
+
 # %% [markdown]
 # # Model Training
 # Das Model wird nach `model/model.pkl` persistiert.
@@ -18,13 +32,15 @@ import pandas as pd
 import cloudpickle
 import mlflow
 import os
+import inspect
+import numpy as np
 from sklearn.utils.class_weight import compute_sample_weight
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer, KNNImputer, MissingIndicator
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.preprocessing import OneHotEncoder
+from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn import metrics as skm
 
@@ -56,42 +72,106 @@ features_train.shape, features_test.shape, labels_train.shape, labels_test.shape
 # ## Modell-Pipeline definieren
 
 # %%
-clf = Pipeline([
+pipeline = Pipeline([
     ("select_feat", ColumnTransformer([
-        ("select_num_cols", "passthrough", ["pclass", "sibsp", "parch", "fare", "age"]),
+        ("select_num_cols", "passthrough", ["sibsp", "parch", "fare", "age"]),
         ("encode_str_cols", Pipeline([
             ("replace_nan", SimpleImputer(strategy="constant", fill_value="Missing")), 
-            ("encode", OneHotEncoder(sparse=False, handle_unknown="ignore"))
-        ]), ["embarked", "sex"]),
-        ("encode_txt_cols", CountVectorizer(binary=True, vocabulary=["Mrs", "Ms", "Mr", "Mme", "Mlle", "Miss"]), "name")
+            ("encode", OrdinalEncoder(handle_unknown="error"))
+        ]), ["embarked", "sex", "pclass"])
     ], remainder="drop")),
     ("impute", FeatureUnion([
-        ("impute", KNNImputer()),
+        ("imputed", KNNImputer()),
         ("miss_indicator", MissingIndicator()),
     ])),
-    ("model", GradientBoostingClassifier(random_state=1234))
+    ("clf", GradientBoostingClassifier(random_state=1234))
 ])
 
 # %% [markdown]
 # ## Feature transformieren
 
 # %%
-X_transformed = Pipeline(clf.steps[:-1]).fit_transform(features_train, labels_train)
+preprocessor = Pipeline(pipeline.steps[:-1])
+X_transformed = preprocessor.fit_transform(features_train, labels_train)
 X_transformed.shape
+
 
 # %% [markdown]
 # Namen der automatisch abgeleiteten Feature extrahieren.
 
 # %%
-feat_names_cols = clf.steps[0][1].transformers[0][2] + \
-clf.steps[0][1].transformers_[1][1].steps[1][1].get_feature_names().tolist() + \
-clf.steps[0][1].transformers_[2][1].get_feature_names()
-feat_names = feat_names_cols + [f"miss_ind_{feat_names_cols[i]}" for i in clf.steps[1][1].transformer_list[1][1].features_]
+def get_feature_names(transformer, parent_feature_names=None):
+    feature_names = parent_feature_names
+    
+    if isinstance(transformer, Pipeline):
+        for _, step in transformer.steps:
+            feature_names = get_feature_names(step, parent_feature_names=feature_names)
+    
+    elif isinstance(transformer, FeatureUnion):
+        feature_names = []
+        for name, trans in transformer.transformer_list:
+            if parent_feature_names is None:
+                parent_feature_names = name
+            feature_names.extend([f"{name}_{item}" for item in get_feature_names(trans, parent_feature_names=parent_feature_names)])
+    
+  
+    elif isinstance(transformer, ColumnTransformer):
+        #check_is_fitted(transformer)
+        feature_names = []
+        for name, trans, column, _ in transformer._iter(fitted=True):
+            if trans == "drop" or (hasattr(column, "__len__") and not len(column)):
+                continue
+            if trans == "passthrough":
+                if hasattr(transformer, "_df_columns"):
+                    if ((not isinstance(column, slice)) and all(isinstance(col, str) for col in column)):
+                        feature_names.extend(column)
+                    else:
+                        feature_names.extend(transformer._df_columns[column])
+                else:
+                    indices = np.arange(transformer._n_features)
+                    feature_names.extend([f'x{i}' for i in indices[column]])
+            else:
+                feature_names.extend(get_feature_names(trans, parent_feature_names=column))
+    
+    elif hasattr(transformer, "get_feature_names"):
+        if parent_feature_names is not None and isinstance(parent_feature_names, slice):
+            raise ValueError()
+        
+        if "input_features" in inspect.getfullargspec(transformer.get_feature_names)[0]:
+            feature_names = transformer.get_feature_names(input_features=parent_feature_names)
+        else:
+            feature_names = transformer.get_feature_names()
+            if parent_feature_names is not None:
+                feature_names = [f'{parent_feature_names}_{feat}' for feat in feature_names]
+    
+    elif hasattr(transformer, "get_support"):
+        if not parent_feature_names:
+            raise ValueError()
+        mask = transformer.get_support()
+        feature_names = (np.array(parent_feature_names)[mask]).tolist()
+    elif hasattr(transformer, "features_"): #MissingIndicator
+        if not parent_feature_names:
+            raise ValueError()
+        feature_names = np.array(parent_feature_names)[transformer.features_]
+    elif hasattr(transformer, "categories_"):
+        feature_names = parent_feature_names
+        #         feature_names = [f"{name} " + ",".join([f"{idx}:{cat}" for idx, cat in enumerate(mapping)]) \
+        #                          for name, mapping in zip(parent_feature_names, transformer.categories_)]
+    elif hasattr(transformer, "clf"):
+        feature_names = transformer.clf.classes_.tolist()
+    else:
+        if parent_feature_names is None:
+            raise ValueError(f"{transformer.__class__} does not provice feature names and no parent feature names are given.")
+        feature_names = parent_feature_names
+    return feature_names
+
+# %%
+feat_names = get_feature_names(pipeline)
 assert len(feat_names)==X_transformed.shape[1]
 feat_names
 
 # %%
-clf.get_params()
+pipeline.get_params()
 
 # %% [markdown]
 # Funktion um Modell zu traininieren
@@ -111,16 +191,16 @@ os.environ["MLFLOW_S3_ENDPOINT_URL"]='http://localhost:9000'
 
 # %%
 param_grid = {
-    "model__max_depth": [2, 3],
-    "model__min_samples_leaf": [5, 20]
+    "clf__max_depth": [2, 3],
+    "clf__min_samples_leaf": [5, 20]
 }
-grid_search = GridSearchCV(clf, param_grid=param_grid, cv=4, n_jobs=4, )
+grid_search = GridSearchCV(pipeline, param_grid=param_grid, cv=4, n_jobs=4, )
 
 with mlflow.start_run() as run:
     sample_weight = compute_sample_weight("balanced", labels_train)
     # Grid-Search unter Berücksichtigung der Sample-Weights durchführen
     grid_search.fit(features_train, labels_train, 
-        **{"model__sample_weight": sample_weight})
+        **{"clf__sample_weight": sample_weight})
 
 # %% [markdown]
 # Ausgabe eines Reports für Grid-Search
@@ -206,14 +286,15 @@ metric_frame.by_group
 
 # %%
 sample_weight = compute_sample_weight("balanced", labels)
-clf.set_params(**grid_search.best_params_)
-clf.fit(features, labels, **{"model__sample_weight": sample_weight})
+pipeline.set_params(**grid_search.best_params_)
+pipeline.fit(features, labels, **{"clf__sample_weight": sample_weight})
 
 # %%
 mitigator = GridSearch(grid_search.best_estimator_.steps[-1][1], ErrorRateParity())
-features_tf = Pipeline(clf.steps[:-1]).transform(features)
+preprocessor = Pipeline(pipeline.steps[:-1])
+features_tf = preprocessor.transform(features)
 mitigator.fit(features_tf, labels, sensitive_features=features["sex"])
-clf = Pipeline(clf.steps[:-1] + [("model", mitigator)])
+pipeline = Pipeline(preprocessor.steps + [("clf", mitigator)])
 
 # %% [markdown]
 # ## Ausgaben speichern
@@ -223,7 +304,7 @@ clf = Pipeline(clf.steps[:-1] + [("model", mitigator)])
 # %%
 os.makedirs("../models", exist_ok=True)
 with open("../models/model.pkl", "wb") as f:
-    cloudpickle.dump(clf, f)
+    cloudpickle.dump(pipeline, f)
 
 # %% [markdown]
 # Metrik speichern

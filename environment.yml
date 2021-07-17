@@ -17,5 +17,9 @@ dependencies:
   - fairlearn
   - cloudpickle
   - lime
+  - matplotlib
+  - pip
   - pip: 
     - openapi-python-client
+    - --no-dependencies alibi-detect
+

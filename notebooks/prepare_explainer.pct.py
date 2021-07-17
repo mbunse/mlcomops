@@ -16,7 +16,7 @@
 # %% [markdown]
 # # Explainer vorbereiten
 # ```
-# dvc run -n prepare_explainer --force -d ../models/model.pkl -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -o ../models/explainer.pkl -w notebooks python prepare_explainer.pct.py
+# dvc run -n prepare_explainer --force -d ../models/model.pkl -d ../data/interim/valid_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -o ../models/explainer.pkl -w notebooks python prepare_explainer.pct.py
 # ```
 
 # %%
@@ -35,7 +35,7 @@ from lime.lime_tabular import LimeTabularExplainer
 pipeline = joblib.load("../models/model.pkl")
 clf = pipeline.steps[-1][1]
 train_df = pd.read_pickle("../data/interim/train_df.pkl")
-test_df = pd.read_pickle("../data/interim/test_df.pkl")
+valid_df = pd.read_pickle("../data/interim/valid_df.pkl")
 feat_names = json.load(open("../models/feat_names.json", "r"))
 
 # %% [markdown]
@@ -48,34 +48,27 @@ train_df_tf = preprocessor.transform(train_df.drop(columns=["label"]))
 # %%
 list(enumerate(feat_names))
 
+# %%
+preprocessor.steps[0][1].transformers_[1][1].steps[1][1].categories_
+
 # %% [markdown]
 # ## Explainer erzeugen
 
 # %%
 explainer = LimeTabularExplainer(train_df_tf, feature_names=feat_names, 
                                  class_names=["died", "survived"], discretize_continuous=True,
-                                categorical_features=[0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+                                categorical_features=[4, 5, 6],
                                 categorical_names={
-                                    0: ["1st class", "2nd class", "3rd class"],
-                                    5: ["yes", "no"],
-                                    6: ["yes", "no"],
-                                    7: ["yes", "no"],
-                                    8: ["yes", "no"],
-                                    9: ["yes", "no"],
-                                    10: ["yes", "no"],
-                                    11: ["yes", "no"],
-                                    12: ["yes", "no"],
-                                    13: ["yes", "no"],
-                                    14: ["yes", "no"],
-                                    15: ["yes", "no"],
-                                    16: ["yes", "no"],
+                                    6: ["1st class", "2nd class", "3rd class"],
+                                    4: ['C', 'Missing', 'Q', 'S'],
+                                    5: ['female', 'male'],
                                 })
 
 # %% [markdown]
 # Explainer testen
 
 # %%
-instance = preprocessor.transform(test_df.drop(columns=["label"]))[0]
+instance = preprocessor.transform(valid_df.drop(columns=["label"]))[0]
 explanation = explainer.explain_instance(instance, clf.predict_proba)
 
 # %%
