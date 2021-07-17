@@ -16,7 +16,7 @@
 # %% [markdown]
 # # Explainer vorbereiten
 # ```
-# dvc run -n prepare_explainer --force -d ../models/model.pkl -d ../data/interim/valid_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -o ../models/explainer.pkl -w notebooks python prepare_explainer.pct.py
+# dvc run -n outlier_model --force -w notebooks -d ../data/interim/train_df.pkl -d ../data/interim/valid_df.pkl -d ../models/feat_names.json -d ../models/model.pkl -d ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl python outlier_detector.pct.py
 # ```
 
 # %%

@@ -27,6 +27,13 @@ def model_output(metric_namespace: str = "", metric_subsystem: str = ""):
         namespace=metric_namespace,
         subsystem=metric_subsystem,
     )
+    OUTLIER_SCORE = Histogram(
+        "outlier_score",
+        "Outlier score of data",
+        buckets=np.round(np.arange(-1,1, 0.1), 1),
+        namespace=metric_namespace,
+        subsystem=metric_subsystem,
+    )
     LABEL = Counter(
         "label",
         "Predicted label",
@@ -39,9 +46,11 @@ def model_output(metric_namespace: str = "", metric_subsystem: str = ""):
         if info.modified_handler == "/predict":
             model_score = info.response.headers.get("X-model-score")
             model_label = info.response.headers.get("X-model-label")
+            outlier_score = info.response.headers.get("X-model-outlierscore")
             if model_score:
                 SCORE.observe(float(model_score))
                 LABEL.labels(model_label).inc()
+                OUTLIER_SCORE.observe(float(outlier_score))
 
     return instrumentation
 
@@ -54,13 +63,14 @@ app = FastAPI(
 )
 
 # Prometheus Instrumentator verknüpfen
-# instrumentator.instrument(app).expose(app)
+instrumentator.instrument(app).expose(app)
 
 model_path = "models/model.pkl"
 pipeline = joblib.load(model_path)
 preprocessor = Pipeline(pipeline.steps[:-1])
 classifier = pipeline.steps[-1][1]
 explainer = joblib.load("models/explainer.pkl")
+outlier_detector = joblib.load("models/outlier_detector.pkl")
 class EmbarkedEnum(str, Enum):
     cherbourg = 'C'
     queenstown = 'Q'
@@ -97,6 +107,7 @@ def predict(response: Response, input: Input):
     prediction = Prediction(label=survival, score=pred_probas[survival])
     response.headers["X-model-score"] = str(prediction.score)
     response.headers["X-model-label"] = str(prediction.label)
+    response.headers["X-model-outlierscore"] = str(outlier_detector.decision_function(df)[0])
     return prediction
 
 @app.post('/explain', response_model=Explanation)

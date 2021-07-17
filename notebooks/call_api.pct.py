@@ -27,7 +27,7 @@ import sys
 # Vorbereitete Daten werden eingelesen
 
 # %%
-test_df = pd.read_pickle("../data/interim/test_df.pkl")
+test_df = pd.read_pickle("../data/interim/valid_df.pkl")
 
 # %%
 test_df.head()
@@ -71,4 +71,4 @@ for idx, row in test_df.drop(columns="label").sample(100).iterrows():
 # Ausgabe der Sentiments
 
 # %%
-data_df[pd.notna(data_df["sentiment"])][["text", "sentiment"]]
+test_df[pd.notna(test_df["survival"])]

@@ -13,7 +13,7 @@ COPY app.py .
 RUN dvc config core.no_scm true && \
     dvc remote modify --local minio access_key_id $AWS_ACCESS_KEY_ID && \
     dvc remote modify --local minio secret_access_key $AWS_SECRET_ACCESS_KEY && \
-    dvc pull models/model.pkl models/explainer.pkl 
+    dvc pull models/model.pkl models/explainer.pkl models/outlier_detector.pkl 
 
 EXPOSE 8080
 
