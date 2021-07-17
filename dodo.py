@@ -1,3 +1,4 @@
+from doit.tools import Interactive
 def task_setup_dvc():
     """Setup dvc"""
 
@@ -44,7 +45,7 @@ def task_run_steps():
 def task_build_modelapi():
     return {
         "actions": [
-            "docker build --network=host --build-arg AWS_ACCESS_KEY_ID=minio-access-key --build-arg AWS_SECRET_ACCESS_KEY=minio-secret-key -t modelapi:latest ."
+            Interactive("docker build --network=host --build-arg AWS_ACCESS_KEY_ID=minio-access-key --build-arg AWS_SECRET_ACCESS_KEY=minio-secret-key -t modelapi:latest ."),
         ]
     }
 

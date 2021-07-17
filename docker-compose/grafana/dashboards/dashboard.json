@@ -117,7 +117,7 @@
       "hideZeroBuckets": true,
       "highlightCards": true,
       "id": 8,
-      "interval": "1m",
+      "interval": "15s",
       "legend": {
         "show": true
       },
@@ -133,6 +133,7 @@
           "refId": "A"
         }
       ],
+      "timeFrom": null,
       "title": "Label",
       "tooltip": {
         "show": true,
@@ -185,7 +186,7 @@
       "hideZeroBuckets": true,
       "highlightCards": true,
       "id": 2,
-      "interval": "1m",
+      "interval": "15s",
       "legend": {
         "show": true
       },
@@ -237,7 +238,7 @@
       "color": {
         "cardColor": "#b4ff00",
         "colorScale": "sqrt",
-        "colorScheme": "interpolateOranges",
+        "colorScheme": "interpolateSpectral",
         "exponent": 0.5,
         "mode": "spectrum"
       },
@@ -250,16 +251,16 @@
       "gridPos": {
         "h": 9,
         "w": 6,
-        "x": 17,
-        "y": 1
+        "x": 4,
+        "y": 10
       },
       "heatmap": {},
       "hideZeroBuckets": true,
       "highlightCards": true,
       "id": 16,
-      "interval": "1m",
+      "interval": "15s",
       "legend": {
-        "show": false
+        "show": true
       },
       "pluginVersion": "7.5.9",
       "reverseYBuckets": false,
@@ -269,7 +270,7 @@
           "expr": "sum(increase(mlops_model_outlier_score_bucket[$__interval])) by (le)",
           "format": "heatmap",
           "interval": "",
-          "legendFormat": "{{round(le)}}",
+          "legendFormat": "{{le}}",
           "refId": "A"
         }
       ],
@@ -313,9 +314,9 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
+        "h": 9,
+        "w": 7,
+        "x": 10,
         "y": 10
       },
       "hiddenSeries": false,
@@ -348,16 +349,17 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "increase(mlops_model_outlier_score_sum[10m])/increase(mlops_model_outlier_score_count[10m])",
+          "expr": "(increase(mlops_model_outlier_score_sum[10m])/increase(mlops_model_outlier_score_count[10m]))-1",
           "instant": false,
           "interval": "",
-          "legendFormat": "",
+          "legendFormat": "outlier score",
           "refId": "A"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
+      "timeShift": null,
       "title": "Avg Outlier Score",
       "tooltip": {
         "shared": true,
@@ -374,14 +376,17 @@
       },
       "yaxes": [
         {
+          "$$hashKey": "object:101",
+          "decimals": null,
           "format": "short",
           "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
+          "max": "1",
+          "min": "-1",
           "show": true
         },
         {
+          "$$hashKey": "object:102",
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -402,7 +407,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 19
       },
       "id": 10,
       "panels": [],
@@ -429,9 +434,9 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
+        "w": 7,
         "x": 0,
-        "y": 19
+        "y": 20
       },
       "heatmap": {},
       "hideZeroBuckets": true,
@@ -445,7 +450,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(increase(mlops_model_http_request_duration_seconds_bucket{handler=\"/predict\"}[30m])) by (le)",
+          "expr": "sum(increase(mlops_model_http_request_duration_seconds_bucket{handler=\"/predict\"}[$__interval])) by (le)",
           "format": "heatmap",
           "interval": "",
           "legendFormat": "{{le}}",
@@ -490,9 +495,9 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 11,
-        "x": 12,
-        "y": 19
+        "w": 10,
+        "x": 7,
+        "y": 20
       },
       "hiddenSeries": false,
       "id": 14,
@@ -581,7 +586,7 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-5m",
     "to": "now"
   },
   "timepicker": {},

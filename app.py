@@ -29,8 +29,8 @@ def model_output(metric_namespace: str = "", metric_subsystem: str = ""):
     )
     OUTLIER_SCORE = Histogram(
         "outlier_score",
-        "Outlier score of data",
-        buckets=np.round(np.arange(-1,1, 0.1), 1),
+        "Outlier score of data (shifted by +1.)",
+        buckets=np.round(np.arange(0,1.9, 0.1), 1),
         namespace=metric_namespace,
         subsystem=metric_subsystem,
     )
@@ -44,13 +44,14 @@ def model_output(metric_namespace: str = "", metric_subsystem: str = ""):
 
     def instrumentation(info: Info) -> None:
         if info.modified_handler == "/predict":
-            model_score = info.response.headers.get("X-model-score")
-            model_label = info.response.headers.get("X-model-label")
-            outlier_score = info.response.headers.get("X-model-outlierscore")
-            if model_score:
-                SCORE.observe(float(model_score))
-                LABEL.labels(model_label).inc()
-                OUTLIER_SCORE.observe(float(outlier_score))
+            if info.response is not None:
+                model_score = info.response.headers.get("X-model-score")
+                model_label = info.response.headers.get("X-model-label")
+                outlier_score = info.response.headers.get("X-model-outlierscore")
+                if model_score:
+                    SCORE.observe(float(model_score))
+                    LABEL.labels(model_label).inc()
+                    OUTLIER_SCORE.observe(float(outlier_score)+1)
 
     return instrumentation
 
@@ -95,8 +96,12 @@ class Prediction(BaseModel):
     label: int = Field(description="Survival", example=1)
     score: float = Field(description="Score", example=0.95)
 
+class Contribution(BaseModel):
+    characteristic: str = Field(description="Explanation characteristic")
+    contribution: float = Field(description="Explanation contribution")
+
 class Explanation(BaseModel):
-    contributions: List[Tuple[str, float]] = Field()
+    contributions: List[Contribution]
 
 # Endpunkt für Prediction
 @app.post('/predict', response_model=Prediction)
@@ -107,7 +112,7 @@ def predict(response: Response, input: Input):
     prediction = Prediction(label=survival, score=pred_probas[survival])
     response.headers["X-model-score"] = str(prediction.score)
     response.headers["X-model-label"] = str(prediction.label)
-    response.headers["X-model-outlierscore"] = str(outlier_detector.decision_function(df)[0])
+    response.headers["X-model-outlierscore"] = str(outlier_detector.decision_function(df)[0]/100)
     return prediction
 
 @app.post('/explain', response_model=Explanation)
@@ -115,7 +120,10 @@ async def explain(input: Input):
     df = pd.DataFrame([input.dict(by_alias=True)])
     X_tf = preprocessor.transform(df)
     explanation = explainer.explain_instance(X_tf[0], classifier.predict_proba)
-    return Explanation(contributions=explanation.as_list())
+    return Explanation(contributions=[
+        Contribution(characteristic=char, contribution=contrib) for char, contrib in explanation.as_list()
+        ]
+    )
 
 
 if __name__ == "__main__":

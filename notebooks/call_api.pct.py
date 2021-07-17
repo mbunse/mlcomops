@@ -43,7 +43,7 @@ test_df.head()
 sys.path.append("../titanic-survival-model-api-client")
 from titanic_survival_model_api_client import Client
 from titanic_survival_model_api_client.models import Input, Prediction
-from titanic_survival_model_api_client.api.default import predict_post
+from titanic_survival_model_api_client.api.default import predict_predict_post
 
 # %% [markdown]
 # Client definieren
@@ -52,7 +52,7 @@ from titanic_survival_model_api_client.api.default import predict_post
 client = Client(base_url="http://127.0.0.1:8080", timeout=30)
 
 # %% [markdown]
-# API mit Daten aufrufen udn Ergebnisse in DataFrame speichern
+# API mit Daten aufrufen und Ergebnisse in DataFrame speichern
 
 # %%
 # Loop über zufällige Zeilen des DataFrames
@@ -62,7 +62,7 @@ for idx, row in test_df.drop(columns="label").sample(100).iterrows():
     input = Input.from_dict(row)
 
     # API aufrufen
-    prediction = predict_post.sync(client=client, json_body=input)
+    prediction = predict_predict_post.sync(client=client, json_body=input)
 
     # Daten in DataFrame schreiben
     test_df.loc[idx, "survival"] = prediction.label
@@ -72,3 +72,17 @@ for idx, row in test_df.drop(columns="label").sample(100).iterrows():
 
 # %%
 test_df[pd.notna(test_df["survival"])]
+
+# %% [markdown]
+# ## Outlier
+
+# %%
+outlier_df = pd.read_pickle("../data/interim/outlier_df.pkl")
+# Loop über zufällige Zeilen des DataFrames
+for idx, row in outlier_df[(outlier_df["fare"].notna()) & (outlier_df["embarked"].notna())].drop(columns="label").sample(100).iterrows():
+    
+    # Input Daten erzeugen 
+    input = Input.from_dict(row)
+
+    # API aufrufen
+    prediction = predict_predict_post.sync(client=client, json_body=input)

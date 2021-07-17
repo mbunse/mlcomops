@@ -63,18 +63,20 @@ Voraussetzung:
 * lokale [Docker](https://docs.docker.com/get-docker/) Installation
 
 ```
-docker-compose build
-docker-compose -f docker-compose.yml -f docker-compose.modelapi.yml up
+docker compose build
+docker compose -f docker-compose.yml -f docker-compose.modelapi.yml up
 ```
-![Dashboard](images/dashboard.png)
-Inspired by [Jeremy Jordan
-A simple solution for monitoring ML systems.
-](https://www.jeremyjordan.me/ml-monitoring/)
+API: http://localhost:8080/docs
 
 ## Monitoring
 
 * [Grafana öffnen](http://localhost:3000)
 * [Prometheus öffen](http://localhost:9090)
+
+![Dashboard](images/dashboard.png)
+Inspired by [Jeremy Jordan
+A simple solution for monitoring ML systems.
+](https://www.jeremyjordan.me/ml-monitoring/)
 
 ## Referenzen:
 * [fastAPI](https://fastapi.tiangolo.com/)
