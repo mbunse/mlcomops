@@ -15,6 +15,11 @@ RUN dvc config core.no_scm true && \
     dvc remote modify --local minio secret_access_key $AWS_SECRET_ACCESS_KEY && \
     dvc pull models/model.pkl models/explainer.pkl models/outlier_detector.pkl 
 
+RUN chgrp -R 0 . && \
+    chmod -R g+rwX .
+
+USER 1001
+
 EXPOSE 8080
 
 CMD ["uvicorn", "--host", "0.0.0.0", "--port", "8080", "app:app"]

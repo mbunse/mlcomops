@@ -14,6 +14,13 @@ conda env create -f environment.yml
 conda activate mlops
 ```
 
+Unter Linux Systemen die Berechtigungen für die gemounteten Volumes anpassen:
+```
+chmod -R o+w docker-compose/
+```
+
+Damit nun die DVC Dateien getrackt werden, den untersten markierten Abschnitt der [.gitignore] auskommentieren.
+
 ## Benötigten Komponenten bereitstellen
 
 ```
@@ -63,8 +70,8 @@ Voraussetzung:
 * lokale [Docker](https://docs.docker.com/get-docker/) Installation
 
 ```
-docker compose build
-docker compose -f docker-compose.yml -f docker-compose.modelapi.yml up
+docker-compose build
+docker-compose -f docker-compose.yml -f docker-compose.modelapi.yml up
 ```
 API: http://localhost:8080/docs
 

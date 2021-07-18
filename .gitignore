@@ -147,11 +147,12 @@ mlruns/
 titanic-survival-model-api-client/
 
 # DVC created during exercises
+# ---- comment out starting from here when using dvc -----------
 .dvc/
 .dvcignore
 dvc.lock
 dvc.yaml
-data/
-models/
+/data/
+/models/
 
 
