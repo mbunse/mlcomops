@@ -202,10 +202,13 @@ with mlflow.start_run() as fairness_run:
     # Metriken in MLFlow loggen
     y_pred = mitigated_clf.predict(features_test)
     prob_pred = mitigated_clf.predict_proba(features_test)
-    mlflow.log_metric("test_accuracy_score", skm.accuracy_score(labels_test, y_pred))
-    mlflow.log_metric("test_f1_score", skm.f1_score(labels_test, y_pred))
-    mlflow.log_metric("test_precision_score", skm.precision_score(labels_test, y_pred))
-    mlflow.log_metric("test_roc_auc_score", skm.roc_auc_score(labels_test, y_pred))
+    scores = {
+        "test_accuracy_score": skm.accuracy_score(labels_test, y_pred),
+        "test_f1_score": skm.f1_score(labels_test, y_pred),
+        "test_precision_score": skm.precision_score(labels_test, y_pred),
+        "test_roc_auc_score": skm.roc_auc_score(labels_test, y_pred),
+    }
+    mlflow.log_metrics(scores)
 
 # %% [markdown]
 # ### Details der Mitigation
@@ -291,7 +294,7 @@ with open("../models/model.pkl", "wb") as f:
 
 # %%
 with open("../models/score.json", "w") as f:
-    json.dump(score, f)
+    json.dump(scores, f)
 
 # %% [markdown]
 # Feature Namen speichern
