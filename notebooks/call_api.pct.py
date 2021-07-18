@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.11.4
 #   kernelspec:
-#     display_name: Python [conda env:mlops]
+#     display_name: Python [conda env:.conda-mlops]
 #     language: python
-#     name: conda-env-mlops-py
+#     name: conda-env-.conda-mlops-py
 # ---
 
 # %% [markdown]
@@ -27,7 +27,7 @@ import sys
 # Vorbereitete Daten werden eingelesen
 
 # %%
-test_df = pd.read_pickle("../data/interim/valid_df.pkl")
+test_df = pd.read_pickle("../data/interim/test_df.pkl")
 
 # %%
 test_df.head()

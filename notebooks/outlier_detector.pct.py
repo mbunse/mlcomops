@@ -16,7 +16,7 @@
 # %% [markdown]
 # # Outlier Detector
 # ```
-# dvc run -n outlier_detector --force -d ../data/interim/train_df.pkl -d ../data/interim/valid_df.pkl -d ../models/feat_names.json -d ../models/model.pkl ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl -w notebooks python outlier_detector.pct.py
+# dvc run -n outlier_detector --force -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl -w notebooks python outlier_detector.pct.py
 # ```
 
 # %%
@@ -37,7 +37,7 @@ from joblib import load
 
 # %%
 train_df = pd.read_pickle("../data/interim/train_df.pkl")
-valid_df = pd.read_pickle("../data/interim/valid_df.pkl")
+test_df = pd.read_pickle("../data/interim/test_df.pkl")
 
 # %% [markdown]
 # Pipeline laden
@@ -89,9 +89,9 @@ ax.axhline(y=0,c="C1")
 outlier_df = pd.read_pickle("../data/interim/outlier_df.pkl")
 outlier_df = outlier_df[~outlier_df["fare"].isna()]
 outlier_df["label"]=1 # is outlier
-valid_df = pd.read_pickle("../data/interim/valid_df.pkl")
-valid_df["label"]=0 # is inliner
-comb_df = pd.concat([outlier_df, valid_df])
+test_df = pd.read_pickle("../data/interim/test_df.pkl")
+test_df["label"]=0 # is inliner
+comb_df = pd.concat([outlier_df, test_df])
 fig, ax = plt.subplots()
 pred = od.decision_function(comb_df.drop(columns=["label"]))
 ax.scatter(x=range(pred.shape[0]), y=pred, c=comb_df["label"].map(lambda x: f"C{x}"))

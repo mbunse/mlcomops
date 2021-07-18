@@ -17,7 +17,7 @@
 # # Drift Detector
 # https://github.com/SeldonIO/alibi-detect/blob/master/examples/cd_chi2ks_adult.ipynb
 # ```
-# dvc run -n drift_model -d ../data/interim/train_df.pkl -d ../data/interim/valid_df.pkl -d ../data/interim/outlier_df.pkl -d ../models/model.pkl -d ../models/feat_names.json -o ../models/drift_detector.pkl -w notebooks python drift_detector.pct.py
+# dvc run -n drift_model -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../data/interim/outlier_df.pkl -d ../models/model.pkl -d ../models/feat_names.json -o ../models/drift_detector.pkl -w notebooks python drift_detector.pct.py
 # ```
 #
 
@@ -38,9 +38,9 @@ from joblib import load
 
 # %%
 train_df = pd.read_pickle("../data/interim/train_df.pkl")
-valid_df = pd.read_pickle("../data/interim/valid_df.pkl")
+test_df = pd.read_pickle("../data/interim/test_df.pkl")
 X_train = train_df.drop(columns=["label"])
-X_valid = valid_df.drop(columns=["label"])
+X_valid = test_df.drop(columns=["label"])
 X_train.tail()
 
 # %% [markdown]

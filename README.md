@@ -45,7 +45,7 @@ dvc remote modify --local minio secret_access_key minio-secret-key
 
 Daten laden als dvc Stage anlegen und ausführen:
 ```
-dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/valid_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
+dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/test_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
 ```
 
 

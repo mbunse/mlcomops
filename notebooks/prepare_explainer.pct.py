@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # ---
 # jupyter:
 #   jupytext:
@@ -6,17 +7,17 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.11.4
 #   kernelspec:
-#     display_name: Python [conda env:mlops]
+#     display_name: Python [conda env:.conda-mlops]
 #     language: python
-#     name: conda-env-mlops-py
+#     name: conda-env-.conda-mlops-py
 # ---
 
 # %% [markdown]
 # # Explainer vorbereiten
 # ```
-# dvc run -n outlier_model --force -w notebooks -d ../data/interim/train_df.pkl -d ../data/interim/valid_df.pkl -d ../models/feat_names.json -d ../models/model.pkl -d ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl python outlier_detector.pct.py
+# dvc run -n outlier_model --force -w notebooks -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl -d ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl python outlier_detector.pct.py
 # ```
 
 # %%
@@ -35,7 +36,7 @@ from lime.lime_tabular import LimeTabularExplainer
 pipeline = joblib.load("../models/model.pkl")
 clf = pipeline.steps[-1][1]
 train_df = pd.read_pickle("../data/interim/train_df.pkl")
-valid_df = pd.read_pickle("../data/interim/valid_df.pkl")
+test_df = pd.read_pickle("../data/interim/test_df.pkl")
 feat_names = json.load(open("../models/feat_names.json", "r"))
 
 # %% [markdown]
@@ -45,14 +46,22 @@ feat_names = json.load(open("../models/feat_names.json", "r"))
 preprocessor = Pipeline(pipeline.steps[:-1])
 train_df_tf = preprocessor.transform(train_df.drop(columns=["label"]))
 
+# %% [markdown]
+# Folgende Feature gibt es
+
 # %%
 list(enumerate(feat_names))
+
+# %% [markdown]
+# Die Werte der kategoriellen Feature sind wie folgt zu mappen.
 
 # %%
 preprocessor.steps[0][1].transformers_[1][1].steps[1][1].categories_
 
 # %% [markdown]
 # ## Explainer erzeugen
+#
+# Für die Eklärbarkeit wird [lime](https://github.com/marcotcr/lime) genutzt. [Lime](https://arxiv.org/abs/1602.04938) fitted dabei einen erklärbaren Algorithmus ([Ridge 8](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)) an die Modellvorhersage für Sample, die der fraglichen Instanz ähnlich sind.
 
 # %%
 explainer = LimeTabularExplainer(train_df_tf, feature_names=feat_names, 
@@ -65,10 +74,10 @@ explainer = LimeTabularExplainer(train_df_tf, feature_names=feat_names,
                                 })
 
 # %% [markdown]
-# Explainer testen
+# Die Erklärung am Beispiel eines Test-Datensatzes
 
 # %%
-instance = preprocessor.transform(valid_df.drop(columns=["label"]))[0]
+instance = preprocessor.transform(test_df.drop(columns=["label"]))[0]
 explanation = explainer.explain_instance(instance, clf.predict_proba)
 
 # %%

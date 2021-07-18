@@ -29,15 +29,15 @@ def task_setup_dvc():
 def task_run_steps():
     return {
         "actions": [
-            "dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/valid_df.pkl " + \
+            "dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/test_df.pkl " + \
                 "-o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py",
             "dvc run -n train --force -d ../data/interim/train_df.pkl -d train.pct.py -M ../models/score.json " + \
                 "-o ../models/model.pkl -o ../models/feat_names.json -w notebooks python train.pct.py",
             "dvc run -n prepare_explainer --force -d ../models/model.pkl -d ../data/interim/train_df.pkl " + \
-                "-d ../data/interim/valid_df.pkl -d ../models/feat_names.json -o ../models/explainer.pkl " + \
+                "-d ../data/interim/test_df.pkl -d ../models/feat_names.json -o ../models/explainer.pkl " + \
                 "-w notebooks python prepare_explainer.pct.py",
             "dvc run -n outlier_model --force -w notebooks -d ../data/interim/train_df.pkl " +  \
-                "-d ../data/interim/valid_df.pkl -d ../models/feat_names.json -d ../models/model.pkl " + \
+                "-d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl " + \
                 "-d ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl python outlier_detector.pct.py",
         ]
     }

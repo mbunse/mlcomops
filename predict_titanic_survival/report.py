@@ -10,7 +10,7 @@ from sklearn.pipeline import FeatureUnion, Pipeline
 from sklearn.compose import ColumnTransformer
 
 def report(gridsearch, features_train, labels_train, \
-    features_test, labels_test, n_top=3):
+    features_valid, labels_valid, n_top=3):
     """
     Utility function to report best scores
     http://scikit-learn.org/stable/auto_examples/model_selection/randomized_search.html
@@ -36,28 +36,28 @@ def report(gridsearch, features_train, labels_train, \
             print("\t{:40s}: {:20s}".format(key, str(value)))
     print("\n")
     print("Accuracy train:  {:5.2f} %".format(estimator.score(features_train, labels_train)*100))
-    accuracy_test = estimator.score(features_test, labels_test)
+    accuracy_test = estimator.score(features_valid, labels_valid)
     print("Accuracy test:   {:5.2f} %".format(accuracy_test*100))
     print("\n")
-    y_pred = estimator.predict(features_test)
-    print(classification_report(labels_test, y_pred))
+    y_pred = estimator.predict(features_valid)
+    print(classification_report(labels_valid, y_pred))
     print("\n")
-    print(confusion_matrix(labels_test, y_pred))
+    print(confusion_matrix(labels_valid, y_pred))
     print("\n")
 
     # Compute predicted probabilities: y_pred_prob
     if hasattr(estimator, "decision_function"):
         #e.g. svm
-        y_pred_prob = estimator.decision_function(features_test)
+        y_pred_prob = estimator.decision_function(features_valid)
     else: 
-        y_pred_prob = estimator.predict_proba(features_test)[:, 1]
+        y_pred_prob = estimator.predict_proba(features_valid)[:, 1]
 
     scores = {"accuracy": accuracy_test}
 
-    target_type = type_of_target(labels_test)
+    target_type = type_of_target(labels_valid)
     if target_type == "binary":
         # Generate values for ROC curve 
-        fpr, tpr, _ = roc_curve(labels_test, y_pred_prob)
+        fpr, tpr, _ = roc_curve(labels_valid, y_pred_prob)
         auc_value = auc(fpr, tpr)
         print("AUC:", auc_value)
         scores["auc"] = auc_value

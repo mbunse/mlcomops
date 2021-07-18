@@ -8,11 +8,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.11.4
 #   kernelspec:
-#     display_name: Python [conda env:mlops]
+#     display_name: Python [conda env:.conda-mlops]
 #     language: python
-#     name: conda-env-mlops-py
+#     name: conda-env-.conda-mlops-py
 # ---
 
 # %% [markdown]
@@ -65,9 +65,9 @@ labels = data_df["label"].copy()
 features = data_df.drop(columns=["label"]).copy()
 
 # %%
-features_train, features_test, labels_train, labels_test = train_test_split(
+features_train, features_valid, labels_train, labels_valid = train_test_split(
     features, labels, random_state=12345, stratify=labels)
-features_train.shape, features_test.shape, labels_train.shape, labels_test.shape
+features_train.shape, features_valid.shape, labels_train.shape, labels_valid.shape
 
 # %% [markdown]
 # ## Modell-Pipeline definieren
@@ -156,7 +156,7 @@ with mlflow.start_run() as run:
 # ## Fairness Metriken bestimmen
 
 # %%
-y_pred = grid_search.best_estimator_.predict(features_test)
+y_pred = grid_search.best_estimator_.predict(features_valid)
 
 # %%
 metrics = {
@@ -168,9 +168,9 @@ metrics = {
     'selection rate': selection_rate,
     'count': count}
 metric_frame = MetricFrame(metrics=metrics,
-                           y_true=labels_test,
+                           y_true=labels_valid,
                            y_pred=y_pred,
-                           sensitive_features=features_test["sex"])
+                           sensitive_features=features_valid["sex"])
 metric_frame.by_group.plot.bar(
     subplots=True,
     layout=[3, 3],
@@ -200,13 +200,13 @@ with mlflow.start_run() as fairness_run:
     mitigated_clf = Pipeline(grid_search.best_estimator_.steps[:-1] + [("model", mitigator)])
     
     # Metriken in MLFlow loggen
-    y_pred = mitigated_clf.predict(features_test)
-    prob_pred = mitigated_clf.predict_proba(features_test)
+    y_pred = mitigated_clf.predict(features_valid)
+    prob_pred = mitigated_clf.predict_proba(features_valid)
     scores = {
-        "test_accuracy_score": skm.accuracy_score(labels_test, y_pred),
-        "test_f1_score": skm.f1_score(labels_test, y_pred),
-        "test_precision_score": skm.precision_score(labels_test, y_pred),
-        "test_roc_auc_score": skm.roc_auc_score(labels_test, y_pred),
+        "test_accuracy_score": skm.accuracy_score(labels_valid, y_pred),
+        "test_f1_score": skm.f1_score(labels_valid, y_pred),
+        "test_precision_score": skm.precision_score(labels_valid, y_pred),
+        "test_roc_auc_score": skm.roc_auc_score(labels_valid, y_pred),
     }
     mlflow.log_metrics(scores)
 
@@ -247,9 +247,9 @@ metrics = {
     'selection rate': selection_rate,
     'count': count}
 metric_frame = MetricFrame(metrics=metrics,
-                           y_true=labels_test,
-                           y_pred=mitigated_clf.predict(features_test),
-                           sensitive_features=features_test["sex"])
+                           y_true=labels_valid,
+                           y_pred=mitigated_clf.predict(features_valid),
+                           sensitive_features=features_valid["sex"])
 metric_frame.by_group.plot.bar(
     subplots=True,
     layout=[3, 3],

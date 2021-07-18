@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.11.4
 #   kernelspec:
-#     display_name: Python [conda env:mlops]
+#     display_name: Python [conda env:.conda-mlops]
 #     language: python
-#     name: conda-env-mlops-py
+#     name: conda-env-.conda-mlops-py
 # ---
 
 # %% [markdown]
@@ -21,7 +21,7 @@
 #
 # DVC Pipeline wurde mit folgendem Befehl eingerichtet:
 # ```
-# dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/valid_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
+# dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/test_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
 # ```
 
 # %%
@@ -90,8 +90,8 @@ model_df.head()
 # Einen Validierungsdatensatz zurückhalten, der nicht für das Training verwendet wird und erst zum Abschluss für eine finale Modell Überprüfung genutzt wird.
 
 # %%
-train_df, valid_df = train_test_split(model_df, random_state=12345, test_size=0.2, stratify=model_df["label"])
-len(train_df), len(valid_df)
+train_df, test_df = train_test_split(model_df, random_state=12345, test_size=0.2, stratify=model_df["label"])
+len(train_df), len(test_df)
 
 # %% [markdown]
 # ## Daten speichern
@@ -103,5 +103,5 @@ os.makedirs("../data/interim", exist_ok=True)
 
 # %%
 train_df.to_pickle("../data/interim/train_df.pkl")
-valid_df.to_pickle("../data/interim/valid_df.pkl")
+test_df.to_pickle("../data/interim/test_df.pkl")
 outlier_df.to_pickle("../data/interim/outlier_df.pkl")

@@ -7,11 +7,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.11.4
 #   kernelspec:
-#     display_name: Python [conda env:mlops]
+#     display_name: Python [conda env:.conda-mlops]
 #     language: python
-#     name: conda-env-mlops-py
+#     name: conda-env-.conda-mlops-py
 # ---
 
 # %% [markdown] slideshow={"slide_type": "slide"}
@@ -30,10 +30,12 @@
 # ![Disclaimer](https://i.imgflip.com/5gs3cu.jpg)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Automatisierung
+# ## Umfrage
+# https://strawpoll.com/o29kygyz2
 
-# %% slideshow={"slide_type": "fragment"} hideCode=true language="html"
-# <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Machine learning pipelines <a href="https://t.co/5FpG3HrdW0">pic.twitter.com/5FpG3HrdW0</a></p>&mdash; AI Memes for Artificially Intelligent Teens (@ai_memes) <a href="https://twitter.com/ai_memes/status/1382374419666976771?ref_src=twsrc%5Etfw">April 14, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+# %% hideCode=true
+from IPython.display import IFrame
+IFrame('https://strawpoll.com/embed/o29kygyz2', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Bevor das Projekt startet
@@ -61,7 +63,7 @@
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Anforderungen
-# Datenschutzrechtliche Anforderungen ergeben sich zum Beispiel aus dem [Positionspapier der Datenschutz-Koferenz zu empfohlenen technischen und
+# [Positionspapier der Datenschutz-Koferenz zu empfohlenen technischen und
 # organisatorischen Maßnahmen bei der Entwicklung und dem Betrieb
 # von KI-Systemen](https://www.datenschutzkonferenz-online.de/media/en/20191106_positionspapier_kuenstliche_intelligenz.pdf) von Nov. 2019.
 #
@@ -77,23 +79,6 @@
 # * Regelmäßige Prüfung der Güte des KI-Systems und seiner KI-Komponenten auf Basis der Betriebsdaten
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# In der Praxis können diese Punkte wie folgt gelöst werden:
-#
-# * __Reproduzierbarkeit__: Versionierung von Daten und Code:
-#     * Herkunft der Rohdaten klären
-#     * Wahrung der Verfügbarkeit von Roh- und Trainingsdaten
-#     * Verhinderung von unbefugten Manipulationen an KI-Komponenten
-# * __Experiment Tracking__:
-#     * Dokumentation der Auswahl des KI-Verfahrens
-#     * Evaluation des ausgewählten KI-Verfahrens bezüglich alternativer, erklärbarerer KI-Verfahren
-# * __Modell Erklärbarkeit__:
-#     * Auskunftsmöglichkeit für Betroffene zum Zustandekommen von Entscheidungen und Prognosen
-# * __Monitoring__:
-#     * Regelmäßige Prüfung der Güte des KI-Systems und seiner KI-Komponenten auf Basis der Betriebsdaten
-#     * Überwachung des Verhaltens der KI-Komponente
-#     * Regelmäßige Prüfung der KI-Komponente auf Diskriminierungen und anderes unerwünschtes Verhalten
-
-# %% [markdown] slideshow={"slide_type": "subslide"}
 # ## EU Regulierung
 #
 # [Proposal for a Regulation laying down harmonised rules on artificial intelligence](https://digital-strategy.ec.europa.eu/en/library/proposal-regulation-laying-down-harmonised-rules-artificial-intelligence)
@@ -105,16 +90,28 @@
 # * Kreditwürdigkeitsprüfung
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## EU Regulierung
+# In der Praxis können diese Punkte wie folgt gelöst werden:
 #
-# * __Monitoring__: Art. 14 _Menschliche Aufsicht_
-# * __Experiment Tracking__: Art. 15 _Genauigkeit, Robustheit und Cybersicherheit_
-#
+# * __Reproduzierbarkeit__: Versionierung von Daten und Code:
+#     * Wahrung der Verfügbarkeit von Roh- und Trainingsdaten
+# * __Experiment Tracking__:
+#     * Dokumentation der Auswahl des KI-Verfahrens
+#     * Evaluation des ausgewählten KI-Verfahrens bezüglich alternativer, erklärbarerer KI-Verfahren
+# * __Fairness__:
+#     * Regelmäßige Prüfung der KI-Komponente auf Diskriminierungen und anderes unerwünschtes Verhalten
+# * __Modell Erklärbarkeit__:
+#     * Auskunftsmöglichkeit für Betroffene zum Zustandekommen von Entscheidungen und Prognosen
+# * __Monitoring__:
+#     * Überwachung des Verhaltens der KI-Komponente
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Umfrage
 # https://strawpoll.com/kezy3yudu
-# ![QR1](../images/qr_survey_1.png)
+# <!--![QR1](../images/qr_survey_1.png)-->
+
+# %% hideCode=false
+from IPython.display import IFrame
+IFrame('https://strawpoll.com/embed/kezy3yudu', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Reproduzierbarkeit
@@ -172,7 +169,11 @@
 # https://towardsdatascience.com/real-life-examples-of-discriminating-artificial-intelligence-cae395a90070
 #
 # ![Equity](https://miro.medium.com/max/408/1*hntbZ9h50ql9dxoP0FQfVQ.png)
+
+# %% [markdown] slideshow={"slide_type": "slide"}
+# ## Erklärbarkeit
 #
+# [Explainer](prepare_explainer.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Monitoring
@@ -191,15 +192,25 @@
 #
 # [Outlier Detector](outlier_detector.pct.py)
 
-# %% [markdown]
+# %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Outlier Erkennung
 # [API mit Outliern aufrufen](call_api.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# ## Nicht abgedeckt (DevOps)
+# ## Automatisierung
+
+# %% slideshow={"slide_type": "-"} hideCode=true language="html"
+# <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Machine learning pipelines <a href="https://t.co/5FpG3HrdW0">pic.twitter.com/5FpG3HrdW0</a></p>&mdash; AI Memes for Artificially Intelligent Teens (@ai_memes) <a href="https://twitter.com/ai_memes/status/1382374419666976771?ref_src=twsrc%5Etfw">April 14, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+# %% [markdown] slideshow={"slide_type": "slide"}
+# ## Was gibt es noch?
+# * Data Science Entwicklungsumgebung
 # * Pull Requests
 # * Test Automatisierung
 #     * Unit-Tests
 #     * Intergrations-Tests
-# * Staging
 # * Skalierung (z.B. mit Kubernetes)
+# * Staging
+# * CI/CD
+# * Security
+# * ...
