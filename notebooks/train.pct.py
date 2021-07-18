@@ -71,6 +71,12 @@ features_train.shape, features_test.shape, labels_train.shape, labels_test.shape
 
 # %% [markdown]
 # ## Modell-Pipeline definieren
+#
+# Es werden nur die numerischen Spalten `sibsp`, `parch`, `fare` und `age` sowie die kategorischen Spalten `embarked`, `sex` und `pclass` genutzt.
+#
+# Die kategorischen Spalten werden Ordinal kodiert, da dies z.B. für die Behandlung im Rahmen der Drift-Detektion später vorteilhaft ist und Entscheidungsbaum-basierte Klassifikatoren hiermit auch keine Schwierigkeiten haben.
+#
+# Bevor die Daten in den Klassifikator laufen, werden zuletzt noch fehlende Werte in der Pipeline imputiert.
 
 # %%
 pipeline = Pipeline([
@@ -78,7 +84,7 @@ pipeline = Pipeline([
         ("select_num_cols", "passthrough", ["sibsp", "parch", "fare", "age"]),
         ("encode_str_cols", Pipeline([
             ("replace_nan", SimpleImputer(strategy="constant", fill_value="Missing")), 
-            ("encode", OrdinalEncoder(handle_unknown="error"))
+            ("encode", OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=4))
         ]), ["embarked", "sex", "pclass"])
     ], remainder="drop")),
     ("impute", FeatureUnion([
@@ -89,7 +95,7 @@ pipeline = Pipeline([
 ])
 
 # %% [markdown]
-# ## Feature transformieren
+# Die Präprozessor-Pipeline wird nun gefittet und die Daten testweise transformiert.
 
 # %%
 preprocessor = Pipeline(pipeline.steps[:-1])
@@ -97,54 +103,54 @@ X_transformed = preprocessor.fit_transform(features_train, labels_train)
 X_transformed.shape
 
 # %% [markdown]
-# Namen der automatisch abgeleiteten Feature extrahieren.
+# Nun können die Namen der Präprozessierten Spalten abgeleiteten werden.
 
 # %%
 feat_names = get_feature_names(pipeline)
 assert len(feat_names)==X_transformed.shape[1]
 feat_names
 
+# %% [markdown]
+# Welche Parameter hat die Pipeline?
+
 # %%
-pipeline.get_params()
+list(pipeline.get_params().keys())
 
 # %% [markdown]
-# Funktion um Modell zu traininieren
+# ## Experiment Tracking
 #
 # Tracking der Experimente mittels mlflow
 
 # %%
 mlflow.set_tracking_uri("http://localhost:5000")
-mlflow.sklearn.autolog()
+mlflow.sklearn.autolog(log_model_signatures=False, log_models=False)
 mlflow.set_experiment('New experiment')
+
+# %% [markdown]
+# Die Run-Daten werden direkt in den im Tracking Server hinterlegten S3 Bucket abgelegt. Daher werden hier die entsprechenden Zugangsdaten benötigt.
 
 # %%
 os.environ["AWS_ACCESS_KEY_ID"]='minio-access-key'
 os.environ["AWS_SECRET_ACCESS_KEY"]='minio-secret-key'
 os.environ["MLFLOW_S3_ENDPOINT_URL"]='http://localhost:9000'
-# export AWS_SECRET_ACCESS_KEY='minio-secret-key'"]
+
+# %% [markdown]
+# GridSearch zur Hyperparameter-Optimierung durchführen.
 
 # %%
 param_grid = {
     "clf__max_depth": [2, 3],
     "clf__min_samples_leaf": [5, 20]
 }
-grid_search = GridSearchCV(pipeline, param_grid=param_grid, cv=4, n_jobs=4, )
+grid_search = GridSearchCV(pipeline, param_grid=param_grid, cv=4, n_jobs=4, scoring="accuracy")
+sample_weight = compute_sample_weight("balanced", labels_train)
 
 with mlflow.start_run() as run:
-    sample_weight = compute_sample_weight("balanced", labels_train)
     # Grid-Search unter Berücksichtigung der Sample-Weights durchführen
-    grid_search.fit(features_train, labels_train, 
-        **{"clf__sample_weight": sample_weight})
+    grid_search.fit(features_train, labels_train, **{"clf__sample_weight": sample_weight})
 
 # %% [markdown]
-# Ausgabe eines Reports für Grid-Search
-
-# %%
-score = report(grid_search, features_train, labels_train, features_test, labels_test)
-score
-
-# %%
-mlflow.sklearn.autolog(disable=True)
+# Die Ergebnisse können nun in MLFlow betrachtet werden: [MLFlow](http://localhost:5000)
 
 # %% [markdown]
 # ## Fairness Metriken bestimmen
@@ -178,18 +184,55 @@ metric_frame.by_group
 
 # %% [markdown]
 # Nur GridSearch liefert nicht-randomisierte Ergebnisse und erlaubt auch die Ausgabe von Scores.
+#
+# Die Idee hinter [fairlearn](https://fairlearn.org/) basiert auf [Agarwal et al.](https://arxiv.org/pdf/1803.02453.pdf). Kurz gesprochen wird in einer Grid Suche über einen Lagrange Multiplikator die Gewichte einzelner Datenpunkte so angepasst, dass die jeweils verbliebenen Abweichungen von der Fairness jeweils mehr gewichtet werden. Der Klassifikator, der dabei die besten Trade-Off aus Fairness und Performance liefert wird verwendet.
 
 # %%
 from fairlearn.reductions import ErrorRateParity, GridSearch
+np.random.seed(seed=12345)
 mitigator = GridSearch(grid_search.best_estimator_.steps[-1][1], ErrorRateParity())
 features_train_tf = Pipeline(grid_search.best_estimator_.steps[:-1]).transform(features_train)
-mitigator.fit(features_train_tf, labels_train, sensitive_features=features_train["sex"])
+mlflow.autolog()
+with mlflow.start_run() as fairness_run:
+    mitigator.fit(features_train_tf, labels_train, sensitive_features=features_train["sex"])
+    
+    # Konstruktion einer neuen Pipeline mit mitigiertem Classifier
+    mitigated_clf = Pipeline(grid_search.best_estimator_.steps[:-1] + [("model", mitigator)])
+    
+    # Metriken in MLFlow loggen
+    y_pred = mitigated_clf.predict(features_test)
+    prob_pred = mitigated_clf.predict_proba(features_test)
+    mlflow.log_metric("test_accuracy_score", skm.accuracy_score(labels_test, y_pred))
+    mlflow.log_metric("test_f1_score", skm.f1_score(labels_test, y_pred))
+    mlflow.log_metric("test_precision_score", skm.precision_score(labels_test, y_pred))
+    mlflow.log_metric("test_roc_auc_score", skm.roc_auc_score(labels_test, y_pred))
 
 # %% [markdown]
-# Konstruktion einer neuen Pipeline mit mitigiertem Classifier
+# ### Details der Mitigation
+#
+# Folgendes Grid wird verwendet.
 
 # %%
-mitigated_clf = Pipeline(grid_search.best_estimator_.steps[:-1] + [("model", mitigator)])
+mitigator.lambda_vecs_
+
+# %% [markdown]
+# Folgender Lambda Wert lieferte den gemäß Tradeoff besten Klassifikator.
+
+# %%
+mitigator.best_idx_
+
+
+# %% [markdown]
+# Der Tradeoff nimmt folgende Werte an:
+
+# %%
+def loss_fct(i):
+    return mitigator.objective_weight * mitigator.objectives_[i] + \
+        mitigator.constraint_weight * mitigator.gammas_[i].max()
+{idx: loss_fct(idx) for idx in mitigator.lambda_vecs_.columns}
+
+# %% [markdown]
+# ## Metriken nach Mitigation
 
 # %%
 metrics = {
@@ -217,6 +260,9 @@ metric_frame.by_group
 
 # %% [markdown]
 # ## Auf allen Daten Trainieren
+
+# %%
+mlflow.sklearn.autolog(disable=True)
 
 # %%
 sample_weight = compute_sample_weight("balanced", labels)

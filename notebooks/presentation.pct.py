@@ -94,6 +94,24 @@
 #     * Regelmäßige Prüfung der KI-Komponente auf Diskriminierungen und anderes unerwünschtes Verhalten
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
+# ## EU Regulierung
+#
+# [Proposal for a Regulation laying down harmonised rules on artificial intelligence](https://digital-strategy.ec.europa.eu/en/library/proposal-regulation-laying-down-harmonised-rules-artificial-intelligence)
+#
+# <img alt="EU risk categories" src="https://ec.europa.eu/info/sites/default/files/ai_pyramid_visual-01.jpg" style="height:400px;"/>
+#
+# Hochrisiko z.B.
+# * KI im Straßenverkehr
+# * Kreditwürdigkeitsprüfung
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ## EU Regulierung
+#
+# * __Monitoring__: Art. 14 _Menschliche Aufsicht_
+# * __Experiment Tracking__: Art. 15 _Genauigkeit, Robustheit und Cybersicherheit_
+#
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Umfrage
 # https://strawpoll.com/kezy3yudu
 # ![QR1](../images/qr_survey_1.png)

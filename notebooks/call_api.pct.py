@@ -75,6 +75,8 @@ test_df[pd.notna(test_df["survival"])]
 
 # %% [markdown]
 # ## Outlier
+#
+# Nun die API testweise mit dem Outlier Datensatz (Passagiere ab einem Alter von 50 Jahren) aufrufen.
 
 # %%
 outlier_df = pd.read_pickle("../data/interim/outlier_df.pkl")

@@ -76,24 +76,27 @@ model_df.head()
 ax = model_df["age"].plot.hist(bins=np.arange(0,100,10))
 ax.set_xlabel("Alter");
 
+# %% [markdown]
+# Alle Personen ab 50 werden in einen "Outlier" Datensatz ausgelagert und nicht für Training, Validierung und Test genutzt.
+
 # %%
 outlier_df = model_df[model_df["age"]>=50]
 model_df = model_df[model_df["age"]<50]
 model_df.head()
 
 # %% [markdown]
-# ## Daten aufbereiten
+# ## Validierungsdatensatz trennen
 #
+# Einen Validierungsdatensatz zurückhalten, der nicht für das Training verwendet wird und erst zum Abschluss für eine finale Modell Überprüfung genutzt wird.
 
 # %%
 train_df, valid_df = train_test_split(model_df, random_state=12345, test_size=0.2, stratify=model_df["label"])
 len(train_df), len(valid_df)
 
 # %% [markdown]
-# ## Aubereitete Daten ausgeben
+# ## Daten speichern
 #
-# Der DataFrame wird dann als Pickle ausgeben.
-#
+# Die DataFrames werden als Pickle ausgeben.
 
 # %%
 os.makedirs("../data/interim", exist_ok=True)
