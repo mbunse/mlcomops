@@ -88,3 +88,5 @@ for idx, row in outlier_df[(outlier_df["fare"].notna()) & (outlier_df["embarked"
 
     # API aufrufen
     prediction = predict_predict_post.sync(client=client, json_body=input)
+
+# %%

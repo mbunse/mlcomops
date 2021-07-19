@@ -22,11 +22,10 @@
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Disclaimer
 #
+# * Meine private Ansicht auf Basis meiner Erfahrung
 # * Ich bin kein Jurist
 # * Kein Anspruch auf Vollständigkeit der rechtlichen & regulatorischen Anforderungen
-# * Meine private Ansicht auf Basis meiner Erfahrung
-
-# %% [markdown] slideshow={"slide_type": "fragment"}
+#
 # ![Disclaimer](https://i.imgflip.com/5gs3cu.jpg)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
@@ -60,6 +59,7 @@ IFrame('https://strawpoll.com/embed/o29kygyz2', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Umsetzung
+# https://github.com/mbunse/mlcomops
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Anforderungen
@@ -69,8 +69,6 @@ IFrame('https://strawpoll.com/embed/o29kygyz2', width=700, height=350)
 #
 # Im Positionspapier gefordert (auszugsweise):
 # * Dokumentation der Auswahl des KI-Verfahrens (Abwägung zwischen Nachvollziehbarkeit und benötigter Mächtigkeit)
-# * Evaluation des ausgewählten KI-Verfahrens bezüglich alternativer, erklärbarerer KI-Verfahren
-# * Herkunft der Rohdaten klären
 # * Wahrung der Verfügbarkeit von Roh- und Trainingsdaten
 # * Verhinderung von unbefugten Manipulationen an KI-Komponenten
 # * Auskunftsmöglichkeit für Betroffene zum Zustandekommen von Entscheidungen und Prognosen
@@ -90,7 +88,13 @@ IFrame('https://strawpoll.com/embed/o29kygyz2', width=700, height=350)
 # * Kreditwürdigkeitsprüfung
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# In der Praxis können diese Punkte wie folgt gelöst werden:
+# ## BaFin
+# ![Bafin](../images/bafin_ml_risikomodelle.png)
+#
+# [Prinzipienpapier Big Data und KI vom 15.6.2021](https://www.bafin.de/SharedDocs/Downloads/DE/Aufsichtsrecht/dl_Prinzipienpapier_BDAI.html)
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# Aspekte, die beleuchtet werden sollen:
 #
 # * __Reproduzierbarkeit__: Versionierung von Daten und Code:
 #     * Wahrung der Verfügbarkeit von Roh- und Trainingsdaten
@@ -109,7 +113,7 @@ IFrame('https://strawpoll.com/embed/o29kygyz2', width=700, height=350)
 # https://strawpoll.com/kezy3yudu
 # <!--![QR1](../images/qr_survey_1.png)-->
 
-# %% hideCode=false
+# %% hideCode=true
 from IPython.display import IFrame
 IFrame('https://strawpoll.com/embed/kezy3yudu', width=700, height=350)
 
@@ -164,11 +168,13 @@ IFrame('https://strawpoll.com/embed/kezy3yudu', width=700, height=350)
 # %% [markdown] slideshow={"slide_type": "slide"}
 # ## Fairness in Machine Learning Projekten
 #
-# Benachteiligungsverbot gemäß [§ 19 AGG](https://www.gesetze-im-internet.de/agg/__19.html). Zulässige differenzierung nach Religion, einer Behinderung, Alters oder sexueller Identität, wenn "diese auf anerkannten Prinzipien risikoadäquater Kalkulation beruht" ([§ 20 Absatz 2 AGG](https://www.gesetze-im-internet.de/agg/__20.html))
+# Benachteiligungsverbot gemäß [§ 19 AGG](https://www.gesetze-im-internet.de/agg/__19.html).
 #
 # https://towardsdatascience.com/real-life-examples-of-discriminating-artificial-intelligence-cae395a90070
 #
 # ![Equity](https://miro.medium.com/max/408/1*hntbZ9h50ql9dxoP0FQfVQ.png)
+#
+# [Modell Training](train.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # ## Erklärbarkeit

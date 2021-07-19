@@ -183,9 +183,7 @@ metric_frame.by_group.plot.bar(
 metric_frame.by_group
 
 # %% [markdown]
-# Nur GridSearch liefert nicht-randomisierte Ergebnisse und erlaubt auch die Ausgabe von Scores.
-#
-# Die Idee hinter [fairlearn](https://fairlearn.org/) basiert auf [Agarwal et al.](https://arxiv.org/pdf/1803.02453.pdf). Kurz gesprochen wird in einer Grid Suche über einen Lagrange Multiplikator die Gewichte einzelner Datenpunkte so angepasst, dass die jeweils verbliebenen Abweichungen von der Fairness jeweils mehr gewichtet werden. Der Klassifikator, der dabei die besten Trade-Off aus Fairness und Performance liefert wird verwendet.
+# Die Idee hinter [fairlearn](https://fairlearn.org/) basiert auf [Agarwal et al.](https://arxiv.org/pdf/1803.02453.pdf). Kurz gesprochen wird in einer Grid Suche über einen Lagrange Multiplikator die Gewichte einzelner Datenpunkte so angepasst, dass die jeweils verbliebenen Abweichungen von der Fairness jeweils mehr gewichtet werden. Der Klassifikator, der dabei die besten Trade-Off aus Fairness und Performance liefert wird verwendet. [GridSearch](https://fairlearn.org/v0.5.0/api_reference/fairlearn.reductions.html#fairlearn.reductions.GridSearch) liefert nicht-randomisierte Ergebnisse und erlaubt auch die Ausgabe von Scores.
 
 # %%
 from fairlearn.reductions import ErrorRateParity, GridSearch
