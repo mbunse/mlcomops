@@ -70,6 +70,7 @@ Voraussetzung:
 * lokale [Docker](https://docs.docker.com/get-docker/) Installation
 
 ```
+chmod o+x docker-compose/modelapi/data
 docker-compose build
 docker-compose -f docker-compose.yml -f docker-compose.modelapi.yml up
 ```
@@ -77,7 +78,7 @@ API: http://localhost:8080/docs
 
 ## Monitoring
 
-* [Grafana öffnen](http://localhost:3000)
+* [Grafana öffnen](http://locaadminlhost:3000)
 * [Prometheus öffen](http://localhost:9090)
 
 ![Dashboard](images/dashboard.png)

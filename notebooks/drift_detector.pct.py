@@ -6,19 +6,18 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.11.4
 #   kernelspec:
-#     display_name: Python [conda env:mlops]
+#     display_name: Python [conda env:.conda-mlops]
 #     language: python
-#     name: conda-env-mlops-py
+#     name: conda-env-.conda-mlops-py
 # ---
 
 # %% [markdown]
 # # Drift Detector
 # https://github.com/SeldonIO/alibi-detect/blob/master/examples/cd_chi2ks_adult.ipynb
 # ```
-# dvc run -n drift_model -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../data/interim/outlier_df.pkl -d ../models/model.pkl -d ../models/feat_names.json -o ../models/drift_detector.pkl -w notebooks python drift_detector.pct.py
-# ```
+# dvc run -n drift_model --force -w notebooks -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../data/interim/outlier_df.pkl -d ../models/model.pkl -d ../models/feat_names.json -o ../models/drift_detector.pkl python drift_detector.pct.py"```
 #
 
 # %%
@@ -28,6 +27,7 @@ import numpy as np
 import pandas as pd
 import json
 import joblib
+import cloudpickle
 from scipy.stats import chi2_contingency, ks_2samp
 
 from sklearn.pipeline import Pipeline
@@ -73,6 +73,7 @@ class DriftDetector:
         self.X_train = self._preprocess(X_train)
         self.feat_names = feat_names
         self.categorical_features = categorical_features
+        self.p_value = 0.5
     
     def _preprocess(self, X):
         return self.preprocessor.transform(X)
@@ -88,6 +89,10 @@ class DriftDetector:
                       chi2_contingency(np.vstack([np.bincount(self.X_train[:, feat].astype(int)), 
                                                  np.bincount(X[:, feat].astype(int))]))[1])
         return p_values
+    def predict(self, X):
+        threshold = self.p_value / self.X_train.shape[1]
+        drift_pred = int((np.array(self.test(X)) < threshold).any())
+        return drift_pred
 
 
 # %%
@@ -97,8 +102,17 @@ dd = DriftDetector(X_train, preprocessor, feat_names, categorical_features)
 dd.test(X_valid)
 
 # %%
+0.5 / X_train.shape[1]
+
+# %%
+dd.predict(X_valid)
+
+# %%
 outlier_df = pd.read_pickle("../data/interim/outlier_df.pkl")
 list(zip(feat_names, dd.test(outlier_df[~outlier_df["fare"].isna()].drop(columns=["label"]))))
 
 # %%
-joblib.dump(dd, "../models/drift_detector.pkl")
+dd.predict(outlier_df[~outlier_df["fare"].isna()].drop(columns=["label"]))
+
+# %%
+cloudpickle.dump(dd, open("../models/drift_detector.pkl", "wb"))

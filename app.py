@@ -1,10 +1,12 @@
-from typing import Tuple, List
+from typing import List
 from fastapi import FastAPI, Response
+from fastapi import BackgroundTasks, FastAPI
 from enum import Enum
 from pydantic import BaseModel, Field
 import joblib
 import numpy as np
 import pandas as pd
+import sqlite3
 from sklearn.pipeline import Pipeline
 from prometheus_client import Histogram, Counter
 from prometheus_fastapi_instrumentator import Instrumentator, metrics
@@ -63,6 +65,14 @@ app = FastAPI(
     version="0.1",
 )
 
+DRIFT_METRIC = Counter(
+    "drift",
+    "Detected drift",
+    namespace=NAMESPACE,
+    subsystem=SUBSYSTEM,
+    labelnames=("drift_label",)        
+)
+
 # Prometheus Instrumentator verknüpfen
 instrumentator.instrument(app).expose(app)
 
@@ -72,6 +82,18 @@ preprocessor = Pipeline(pipeline.steps[:-1])
 classifier = pipeline.steps[-1][1]
 explainer = joblib.load("models/explainer.pkl")
 outlier_detector = joblib.load("models/outlier_detector.pkl")
+drift_detector = joblib.load("models/drift_detector.pkl")
+
+def detect_drift(df: pd.DataFrame):
+    con = sqlite3.connect("data/input_data.sqlite", timeout=15)
+    df.to_sql("Input", con, if_exists="append", index=False)
+    df = pd.read_sql("Select * FROM Input", con)
+    if len(df)>=100:
+        drift_pred = drift_detector.predict(df)
+        DRIFT_METRIC.labels(drift_pred).inc()
+        con.execute("DELETE FROM Input;")
+        con.close()
+
 class EmbarkedEnum(str, Enum):
     cherbourg = 'C'
     queenstown = 'Q'
@@ -105,8 +127,9 @@ class Explanation(BaseModel):
 
 # Endpunkt für Prediction
 @app.post('/predict', response_model=Prediction)
-def predict(response: Response, input: Input):
+def predict(response: Response, input: Input, background_tasks: BackgroundTasks):
     df = pd.DataFrame([input.dict(by_alias=True)])
+    background_tasks.add_task(detect_drift, df)
     pred_probas = pipeline.predict_proba(df)[0]
     survival = np.argmax(pred_probas)
     prediction = Prediction(label=survival, score=pred_probas[survival])

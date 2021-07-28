@@ -17,6 +17,7 @@ dependencies:
   - fairlearn
   - cloudpickle
   - lime
+  - eli5
   - matplotlib
   - pip
   - pip: 

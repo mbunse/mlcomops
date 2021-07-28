@@ -39,6 +39,9 @@ def task_run_steps():
             "dvc run -n outlier_model --force -w notebooks -d ../data/interim/train_df.pkl " +  \
                 "-d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl " + \
                 "-d ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl python outlier_detector.pct.py",
+            "dvc run -n drift_model --force -w notebooks -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl " + \
+                "-d ../data/interim/outlier_df.pkl -d ../models/model.pkl -d ../models/feat_names.json " + \
+                "-o ../models/drift_detector.pkl python drift_detector.pct.py",
         ]
     }
 
