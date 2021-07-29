@@ -7,6 +7,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import sqlite3
+from threading import Lock
 from sklearn.pipeline import Pipeline
 from prometheus_client import Histogram, Counter
 from prometheus_fastapi_instrumentator import Instrumentator, metrics
@@ -70,7 +71,7 @@ DRIFT_METRIC = Counter(
     "Detected drift",
     namespace=NAMESPACE,
     subsystem=SUBSYSTEM,
-    labelnames=("drift_label",)        
+    labelnames=("drift_label",) ,
 )
 
 # Prometheus Instrumentator verknüpfen
@@ -84,15 +85,23 @@ explainer = joblib.load("models/explainer.pkl")
 outlier_detector = joblib.load("models/outlier_detector.pkl")
 drift_detector = joblib.load("models/drift_detector.pkl")
 
+drift_lock = Lock()
+
+# Ensure that both labels are observed from the start
+DRIFT_METRIC.labels(0).inc(0)
+DRIFT_METRIC.labels(1).inc(0)
+
 def detect_drift(df: pd.DataFrame):
-    con = sqlite3.connect("data/input_data.sqlite", timeout=15)
-    df.to_sql("Input", con, if_exists="append", index=False)
-    df = pd.read_sql("Select * FROM Input", con)
-    if len(df)>=100:
-        drift_pred = drift_detector.predict(df)
-        DRIFT_METRIC.labels(drift_pred).inc()
-        con.execute("DELETE FROM Input;")
-        con.close()
+    with drift_lock:
+        con = sqlite3.connect("data/input_data.sqlite", timeout=15)
+        df.to_sql("Input", con, if_exists="append", index=False)
+        df = pd.read_sql("Select * FROM Input", con)
+        if len(df)>=100:
+            drift_pred = drift_detector.predict(df)
+            DRIFT_METRIC.labels(drift_pred).inc()
+            con.execute("DELETE FROM Input;")
+            con.commit()
+            con.close()
 
 class EmbarkedEnum(str, Enum):
     cherbourg = 'C'

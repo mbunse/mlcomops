@@ -78,7 +78,7 @@ API: http://localhost:8080/docs
 
 ## Monitoring
 
-* [Grafana öffnen](http://locaadminlhost:3000)
+* [Grafana öffnen](http://localhost:3000)
 * [Prometheus öffen](http://localhost:9090)
 
 ![Dashboard](images/dashboard.png)
