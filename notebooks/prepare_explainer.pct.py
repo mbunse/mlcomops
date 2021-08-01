@@ -61,7 +61,7 @@ preprocessor.steps[0][1].transformers_[1][1].steps[1][1].categories_
 # %% [markdown]
 # ## Explainer erzeugen
 #
-# Für die Eklärbarkeit wird [lime](https://github.com/marcotcr/lime) genutzt. [Lime](https://arxiv.org/abs/1602.04938) fitted dabei einen erklärbaren Algorithmus ([Ridge 8](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)) an die Modellvorhersage für Sample, die der fraglichen Instanz ähnlich sind.
+# Für die Eklärbarkeit wird [lime](https://github.com/marcotcr/lime) genutzt. [Lime](https://arxiv.org/abs/1602.04938) fitted dabei einen erklärbaren Algorithmus ([Ridge](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)) an die Modellvorhersage für Sample, die der fraglichen Instanz ähnlich sind.
 
 # %%
 explainer = LimeTabularExplainer(train_df_tf, feature_names=feat_names, 
@@ -82,6 +82,9 @@ explanation = explainer.explain_instance(instance, clf.predict_proba)
 
 # %%
 explanation.show_in_notebook()
+
+# %%
+test_df.iloc[0]
 
 # %%
 {value: explain for value, explain in explanation.as_list()}

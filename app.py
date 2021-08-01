@@ -112,7 +112,7 @@ def predict(response: Response, input: Input):
     prediction = Prediction(label=survival, score=pred_probas[survival])
     response.headers["X-model-score"] = str(prediction.score)
     response.headers["X-model-label"] = str(prediction.label)
-    response.headers["X-model-outlierscore"] = str(outlier_detector.decision_function(df)[0]/100)
+    response.headers["X-model-outlierscore"] = str(max(-2, outlier_detector.decision_function(df)[0]/2))
     return prediction
 
 @app.post('/explain', response_model=Explanation)

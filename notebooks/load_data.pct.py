@@ -85,9 +85,9 @@ model_df = model_df[model_df["age"]<50]
 model_df.head()
 
 # %% [markdown]
-# ## Validierungsdatensatz trennen
+# ## Testdatensatz trennen
 #
-# Einen Validierungsdatensatz zurückhalten, der nicht für das Training verwendet wird und erst zum Abschluss für eine finale Modell Überprüfung genutzt wird.
+# Einen Testdatensatz zurückhalten, der nicht für das Training verwendet wird und erst zum Abschluss für eine finale Modell Überprüfung genutzt wird.
 
 # %%
 train_df, test_df = train_test_split(model_df, random_state=12345, test_size=0.2, stratify=model_df["label"])
