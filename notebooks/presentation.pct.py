@@ -87,7 +87,7 @@ IFrame('https://strawpoll.com/embed/kf252h78r', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## BaFin
-# ![Bafin](../images/bafin_ml_risikomodelle.png)
+# ![Bafin](../images/bafin_ml_principles.png)
 #
 # [Supervisory Principles for Big Data and AI from 6/15/2021](https://www.bafin.de/SharedDocs/Downloads/DE/Aufsichtsrecht/dl_Prinzipienpapier_BDAI.html)
 
@@ -132,7 +132,7 @@ IFrame('https://strawpoll.com/embed/daprodsdy', width=700, height=350)
 # ![DVC](../images/data_code_versioning.png)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## DVC Daten
+# ## DVC Data
 #
 # [DVC Remote with Minio](http://localhost:9000/minio/titanic/)
 
@@ -143,7 +143,7 @@ IFrame('https://strawpoll.com/embed/daprodsdy', width=700, height=350)
 # ! cd .. & dvc repro
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## DVC Daten
+# ## DVC Data
 
 # %%
 # ! cd .. & dvc push
