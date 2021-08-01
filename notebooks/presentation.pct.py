@@ -22,122 +22,119 @@
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Disclaimer
 #
-# * Meine private Ansicht auf Basis meiner Erfahrung
-# * Ich bin kein Jurist
-# * Kein Anspruch auf Vollständigkeit der rechtlichen & regulatorischen Anforderungen
+# * views are my own
+# * no claim to completeness of legal & regulatory requirements
 #
 # ![Disclaimer](https://i.imgflip.com/5gs3cu.jpg)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Umfrage
-# https://strawpoll.com/o29kygyz2
+# ## Poll
+# https://strawpoll.com/kf252h78r
 
 # %% hideCode=true
 from IPython.display import IFrame
-IFrame('https://strawpoll.com/embed/o29kygyz2', width=700, height=350)
+IFrame('https://strawpoll.com/embed/kf252h78r', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# # Bevor das Projekt startet
+# # Before the project starts
 #
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Datenschutz klären
-# Rechtsgrundlage für Verarbeitungszweck klären ([Art. 6 DSGVO](https://dsgvo-gesetz.de/art-6-dsgvo/)):  
-# * Einwilligung
-# * Erfüllung eines Vertrages
-# * rechtliche Vorgaben
-# * lebenswichtige Interessen der betroffenen Personen
-# * Wahrnehmung einer Aufgabe im öffentlichen Interesse
-# * berechtigtes Interesse
+# ## Clarify data protection
+# Clarify legal basis for processing purpose ([Art. 6 GDPR](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0679&from=DE#d1e1888-1-1)):  
+# * Fulfillment of a contract
+# * legal requirements
+# * vital interests of the data subjects
+# * performance of a task in the public interest
+# * legitimate interest
 #
-# I.d.R. Datenschutzfolgeabschätzung erforderlich, da "automatisierte Verarbeitung" \([Art 35 Absatz 3 DSGVO](https://dsgvo-gesetz.de/art-35-dsgvo/)\). Auch die Listen der Landesdatenschutzbehörden sind zu beachten (z.B. [BayLDA: Liste der Verarbeitungstätigkeiten, für die eine DSFA durchzuführen ist](https://www.lda.bayern.de/media/dsfa_muss_liste_dsk_de.pdf))
+# Data protection impact assessment usually required, as "automated processing" (Art 35(3) GDPR). The lists of the state data protection authorities must also be taken into account (e.g. [BayLDA: List of processing activities for which a DSFA must be performed](https://www.lda.bayern.de/media/dsfa_muss_liste_dsk_de.pdf)).
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ### Verarbeitung von Mitarbeiterbezogenen Daten
+# ### Processing of employee-related data
 #
-# Im Rahmen der betrieblichen Mitbestimmung ([§ 87 Absatz 1 Nr. 6](https://www.gesetze-im-internet.de/betrvg/__87.html)) ist der Betriebsrat über die Verarbeitung von Mitarbeiterdaten zu informieren.
+# The works council must be informed about the processing of employee data within the framework of co-determination ([Section 87 (1) No. 6 German Works Constitution Act](https://www.gesetze-im-internet.de/betrvg/__87.html)).
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# # Umsetzung
+# # Implementation of regualtory requirements in machine learning projects
 # https://github.com/mbunse/mlcomops
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Anforderungen
-# [Positionspapier der Datenschutz-Koferenz zu empfohlenen technischen und
-# organisatorischen Maßnahmen bei der Entwicklung und dem Betrieb
-# von KI-Systemen](https://www.datenschutzkonferenz-online.de/media/en/20191106_positionspapier_kuenstliche_intelligenz.pdf) von Nov. 2019.
+# ## Requirements
+# [Position paper of the Data Protection Conference on recommended technical and
+# organizational measures for the development and operation
+# of AI systems](https://www.datenschutzkonferenz-online.de/media/en/20191106_positionspapier_kuenstliche_intelligenz.pdf) as of Nov. 2019.
 #
-# Im Positionspapier gefordert (auszugsweise):
-# * Dokumentation der Auswahl des KI-Verfahrens (Abwägung zwischen Nachvollziehbarkeit und benötigter Mächtigkeit)
-# * Wahrung der Verfügbarkeit von Roh- und Trainingsdaten
-# * Verhinderung von unbefugten Manipulationen an KI-Komponenten
-# * Auskunftsmöglichkeit für Betroffene zum Zustandekommen von Entscheidungen und Prognosen
-# * Überwachung des Verhaltens der KI-Komponente
-# * Regelmäßige Prüfung der KI-Komponente auf Diskriminierungen und anderes unerwünschtes Verhalten
-# * Regelmäßige Prüfung der Güte des KI-Systems und seiner KI-Komponenten auf Basis der Betriebsdaten
+# Required in the position paper (excerpts):
+# * Documentation of the selection of the AI process (balancing traceability and required power).
+# * Preservation of availability of raw and training data.
+# * Prevention of unauthorized manipulation of AI components
+# * Possibility for data subjects to obtain information on how decisions and predictions were made
+# * Monitoring of the behavior of the AI component
+# * Regular testing of the AI component for discrimination and other undesirable behavior
+# * Regular testing of the quality of the AI system and its AI components on the basis of operational data.
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## EU Regulierung
+# ## EU regulation
 #
 # [Proposal for a Regulation laying down harmonised rules on artificial intelligence](https://digital-strategy.ec.europa.eu/en/library/proposal-regulation-laying-down-harmonised-rules-artificial-intelligence)
 #
 # <img alt="EU risk categories" src="https://ec.europa.eu/info/sites/default/files/ai_pyramid_visual-01.jpg" style="height:400px;"/>
 #
-# Hochrisiko z.B.
-# * KI im Straßenverkehr
-# * Kreditwürdigkeitsprüfung
+# High risk e.g.
+# * AI in road traffic
+# * Credit scoring
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## BaFin
 # ![Bafin](../images/bafin_ml_risikomodelle.png)
 #
-# [Prinzipienpapier Big Data und KI vom 15.6.2021](https://www.bafin.de/SharedDocs/Downloads/DE/Aufsichtsrecht/dl_Prinzipienpapier_BDAI.html)
+# [Supervisory Principles for Big Data and AI from 6/15/2021](https://www.bafin.de/SharedDocs/Downloads/DE/Aufsichtsrecht/dl_Prinzipienpapier_BDAI.html)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# Aspekte, die beleuchtet werden sollen:
+# Aspects to be highlighted:
 #
-# * __Reproduzierbarkeit__: Versionierung von Daten und Code:
-#     * Wahrung der Verfügbarkeit von Roh- und Trainingsdaten
+# * __Reproducibility__: versioning of data and code:
+#     * Maintaining availability of raw and training data.
 # * __Experiment Tracking__:
-#     * Dokumentation der Auswahl des KI-Verfahrens
-#     * Evaluation des ausgewählten KI-Verfahrens bezüglich alternativer, erklärbarerer KI-Verfahren
+#     * Documentation of the selection of the AI procedure.
+#     * Evaluation of the selected AI procedure with respect to alternative, more explainable AI procedures.
 # * __Fairness__:
-#     * Regelmäßige Prüfung der KI-Komponente auf Diskriminierungen und anderes unerwünschtes Verhalten
-# * __Modell Erklärbarkeit__:
-#     * Auskunftsmöglichkeit für Betroffene zum Zustandekommen von Entscheidungen und Prognosen
-# * __Monitoring__:
-#     * Überwachung des Verhaltens der KI-Komponente
+#     * Periodic testing of the AI component for discrimination and other undesirable behavior.
+# * __Model Explainability__:
+#     * Ability to provide information to affected parties on how decisions and predictions were made.
+# * __monitoring__:
+#     * monitoring of the behavior of the AI component
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Umfrage
-# https://strawpoll.com/kezy3yudu
-# <!--![QR1](../images/qr_survey_1.png)-->
+# ## Poll
+# https://strawpoll.com/daprodsdy
 
 # %% hideCode=true
 from IPython.display import IFrame
-IFrame('https://strawpoll.com/embed/kezy3yudu', width=700, height=350)
+IFrame('https://strawpoll.com/embed/daprodsdy', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# # Reproduzierbarkeit
+# # Reproducibility
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Datensatz
+# ## Data set
 #
 # ![Hey Rose, according to this ML model I must stay in water and freeze](https://www.nagarajbhat.com/post/predicting-titanic-survival/featured.jpg)
 
 # %% [markdown] slideshow={"slide_type": "fragment"}
-# [Daten laden](load_data.pct.py)
+# [Load data](load_data.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Daten versionieren, 
+# ## Data Versioning, 
 #
-# z.B. mit [DVC](https://dvc.org/)
+# e.g. with [DVC](https://dvc.org/)
 # ![DVC](../images/data_code_versioning.png)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## DVC Daten
 #
-# [DVC Remote in Minio](http://localhost:9000/minio/titanic/)
+# [DVC Remote with Minio](http://localhost:9000/minio/titanic/)
 
 # %% slideshow={"slide_type": "fragment"}
 # ! cd .. & dvc pull
@@ -152,9 +149,9 @@ IFrame('https://strawpoll.com/embed/kezy3yudu', width=700, height=350)
 # ! cd .. & dvc push
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ### Alle Random Seeds setzen
-# vgl. ["Verwirrung über R-Wert-Berechnung des RKI"](https://www.spiegel.de/politik/deutschland/robert-koch-institut-und-der-r-wert-ende-april-verwirrung-ueber-berechnung-a-264a8d9c-454f-499a-b729-e4b537688b72)
-# > Innerhalb dieser Simulation werden Zufallszahlen gezogen, die sich bei jedem Lauf des Programms leicht unterschiedlich ergeben und daher nicht exakt reproduzierbar sind.
+# ### Set all random seeds
+# cf. ["Confusion about R-value calculation of the RKI"](https://www.spiegel.de/politik/deutschland/robert-koch-institut-und-der-r-wert-ende-april-verwirrung-ueber-berechnung-a-264a8d9c-454f-499a-b729-e4b537688b72)
+# > Within this simulation, random numbers are drawn that will result slightly different each time the program is run and therefore cannot be exactly reproduced.
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # ## Experiment Tracking
@@ -166,9 +163,11 @@ IFrame('https://strawpoll.com/embed/kezy3yudu', width=700, height=350)
 # [MLFlow](http://localhost:5000)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# ## Fairness in Machine Learning Projekten
+# ## Fairness in Machine Learning Projects
 #
-# Benachteiligungsverbot gemäß [§ 19 AGG](https://www.gesetze-im-internet.de/agg/__19.html).
+# Prohibition of discrimination according to [§ 19 AGG](https://www.gesetze-im-internet.de/agg/__19.html).
+#
+# [Model Training](train.pct.py)
 #
 # https://towardsdatascience.com/real-life-examples-of-discriminating-artificial-intelligence-cae395a90070
 #
@@ -177,7 +176,7 @@ IFrame('https://strawpoll.com/embed/kezy3yudu', width=700, height=350)
 # [Modell Training](train.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# ## Erklärbarkeit
+# ## Explainability
 #
 # [Explainer](prepare_explainer.pct.py)
 
@@ -190,33 +189,33 @@ IFrame('https://strawpoll.com/embed/kezy3yudu', width=700, height=350)
 #
 # [Grafana](http://localhost:3000)
 #
-# [API aufrufen](call_api.pct.py)
+# [Call API](call_api.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Outlier Erkennung
+# ## Outlier Detection
 # <img style="height:600px;" src="https://i.stack.imgur.com/3Ab7e.jpg" alt="Extrapolation" />
 #
 # [Outlier Detector](outlier_detector.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Outlier Erkennung
-# [API mit Outliern aufrufen](call_api.pct.py)
+# ## Outlier Detection
+# [Call API with outliers](call_api.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# ## Automatisierung
+# ## Automation
 
 # %% slideshow={"slide_type": "-"} hideCode=true language="html"
 # <blockquote class="twitter-tweet"><p lang="en" dir="ltr">Machine learning pipelines <a href="https://t.co/5FpG3HrdW0">pic.twitter.com/5FpG3HrdW0</a></p>&mdash; AI Memes for Artificially Intelligent Teens (@ai_memes) <a href="https://twitter.com/ai_memes/status/1382374419666976771?ref_src=twsrc%5Etfw">April 14, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# ## Was gibt es noch?
-# * Data Science Entwicklungsumgebung
+# ## What else?
+# * Data Science development environment
 # * Pull Requests
-# * Test Automatisierung
-#     * Unit-Tests
-#     * Intergrations-Tests
-# * Skalierung (z.B. mit Kubernetes)
+# * Test Automation
+#     * Unit Tests
+#     * Integration tests
+# * Scaling (e.g. with Kubernetes)
 # * Staging
 # * CI/CD
-# * Security
+# * security
 # * ...
