@@ -1,11 +1,11 @@
 # MLOps
 
-## Voraussetzungen
-* Conda Installation (z.B. [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
-* Base Umgebung mit Jupyter, [nb_conda](https://anaconda.org/conda-forge/nb_conda) und [jupytext](https://jupytext.readthedocs.io/en/latest/install.html)
-## Einrichtung
+## Requirements
+* Conda installation (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html))
+* Base environment with Jupyter, [nb_conda](https://anaconda.org/conda-forge/nb_conda) and [jupytext](https://jupytext.readthedocs.io/en/latest/install.html)
+## Setup
 
-Nach dem Checkout zunächst die conda Umgebung erstellen und aktivieren:
+After checkout, first create and activate the conda environment:
 ```
 git clone https://github.com/datanizing/datascienceday.git
 cd datascienceday
@@ -14,23 +14,23 @@ conda env create -f environment.yml
 conda activate mlops
 ```
 
-Unter Linux Systemen die Berechtigungen für die gemounteten Volumes anpassen:
+On Linux systems, adjust the permissions for the mounted volumes:
 ```
 chmod -R o+w docker-compose/
 ```
 
-Damit nun die DVC Dateien getrackt werden, den untersten markierten Abschnitt der [.gitignore] auskommentieren.
+Now, in order for the DVC files to be tracked, comment out the lowest highlighted section of the [.gitignore].
 
-## Benötigten Komponenten bereitstellen
+## Deploy required components
 
 ```
 docker-compose build
 docker-compose up
 ```
 
-In [Minio](http://localhost:9000) ein Bucket titanic anlegen.
+Create a bucket titanic in [Minio](http://localhost:9000).
 
-## DVC initialisieren
+## Initialize DVC
 
 ```
 dvc init
@@ -39,35 +39,34 @@ dvc remote modify minio endpointurl http://localhost:9000
 dvc remote modify --local minio access_key_id minio-access-key
 dvc remote modify --local minio secret_access_key minio-secret-key
 ```
-## Datensatz
 
-[Titanic Datensatz von OpenML](https://www.openml.org/d/40945)
+## record
 
-Daten laden als dvc Stage anlegen und ausführen:
+[Titanic dataset from OpenML](https://www.openml.org/d/40945)
+
+Load data as dvc Stage create and run:
 ```
 dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/test_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
 ```
 
-
-
-## Starten der API:
+## Start the API:
 
 ```
 python app.py
 ```
 
-## API erzeugen
+## Create API
 
-Während die Model API läuft, folgendes ausführen:
+While the Model API is running, run the following:
 ```
 openapi-python-client generate --url http://127.0.0.1:8080/openapi.json
 ```
 
 
-## Setup aus Prometheus, Grafana und Model API starten
+## Start setup from Prometheus, Grafana and Model API.
 
-Voraussetzung: 
-* lokale [Docker](https://docs.docker.com/get-docker/) Installation
+Prerequisite: 
+* local [Docker](https://docs.docker.com/get-docker/) installation.
 
 ```
 chmod o+x docker-compose/modelapi/data
@@ -78,15 +77,15 @@ API: http://localhost:8080/docs
 
 ## Monitoring
 
-* [Grafana öffnen](http://localhost:3000)
-* [Prometheus öffen](http://localhost:9090)
+* [Open Grafana](http://localhost:3000)
+* [Open Prometheus](http://localhost:9090)
 
 ![Dashboard](images/dashboard.png)
 Inspired by [Jeremy Jordan
 A simple solution for monitoring ML systems.
 ](https://www.jeremyjordan.me/ml-monitoring/)
 
-## Referenzen:
+## References:
 * [fastAPI](https://fastapi.tiangolo.com/)
 * [pydantic]()
 * [dvc](https://dvc.org/)
