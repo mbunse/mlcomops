@@ -15,7 +15,7 @@
 # ---
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# # MLOps
+# # ComMLOps
 #
 # ![MLOps](https://nuernberg.digital/uploads/tx_seminars/praesentation2.jpg)
 

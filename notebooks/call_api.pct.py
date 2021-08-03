@@ -15,7 +15,7 @@
 # ---
 
 # %% [markdown]
-# # Sentiment API
+# # Model API
 
 # %%
 import pandas as pd
