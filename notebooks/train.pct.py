@@ -104,52 +104,11 @@ preprocessor = Pipeline(pipeline.steps[:-1])
 X_transformed = preprocessor.fit_transform(features_train, labels_train)
 X_transformed.shape
 
-
-# %%
-@transform_feature_names.register(ColumnTransformer)
-def _columntransformer_names(transformer, in_names=None):
-    #check_is_fitted(transformer)
-    feature_names = []
-    for name, trans, column, _ in transformer._iter(fitted=True):
-        if trans == "drop" or (hasattr(column, "__len__") and not len(column)):
-            continue
-        if trans == "passthrough":
-            if hasattr(transformer, "_df_columns"):
-                if ((not isinstance(column, slice)) and all(isinstance(col, str) for col in column)):
-                    feature_names.extend(column)
-                else:
-                    feature_names.extend(transformer._df_columns[column])
-            else:
-                indices = np.arange(transformer._n_features)
-                feature_names.extend([f'x{i}' for i in indices[column]])
-        else:
-            feature_names.extend(transform_feature_names(trans, in_names=column))
-    return feature_names
-
-
-# %%
-@transform_feature_names.register(SimpleImputer)
-@transform_feature_names.register(OrdinalEncoder)
-@transform_feature_names.register(KNNImputer)
-@transform_feature_names.register(GradientBoostingClassifier)
-def _imputer_names(transformer, in_names=None):
-    return in_names
-
-
-# %%
-@transform_feature_names.register(MissingIndicator)
-def _missind_names(transformer, in_names=None):
-    if not in_names:
-        raise ValueError()
-    feature_names = np.array(in_names)[transformer.features_]
-    return feature_names
-
-
 # %% [markdown]
 # Now the names of the preprocessed columns can be derived.
 
 # %%
-feat_names = transform_feature_names(pipeline)
+feat_names = get_feature_names(pipeline)
 assert len(feat_names)==X_transformed.shape[1]
 feat_names
 

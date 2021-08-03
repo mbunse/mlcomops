@@ -1,4 +1,6 @@
-# MLOps
+# ComMLOps
+
+[PDF Version of the presentation](presentation/presentation.pdf)
 
 ## Requirements
 * Conda installation (e.g. [Miniconda](https://docs.conda.io/en/latest/miniconda.html))

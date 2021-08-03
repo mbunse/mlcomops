@@ -19,6 +19,11 @@
 #
 # ![MLOps](https://nuernberg.digital/uploads/tx_seminars/praesentation2.jpg)
 
+# %% [markdown] slideshow={"slide_type": "slide"}
+# # ComMLOps
+#
+# <img alt="ComMLOps" src="../images/commlops_venn.png" width="600" />
+
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Disclaimer
 #
@@ -40,9 +45,10 @@ IFrame('https://strawpoll.com/embed/kf252h78r', width=700, height=350)
 #
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Clarify data protection
-# Clarify legal basis for processing purpose ([Art. 6 GDPR](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0679&from=DE#d1e1888-1-1)):  
-# * Fulfillment of a contract
+# ## Data Protection
+# Clarify legal basis for your purpose ([Art. 6 GDPR](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32016R0679&from=DE#d1e1888-1-1)):  
+# * data subject has given consent to the processing
+# * fulfillment of a contract
 # * legal requirements
 # * vital interests of the data subjects
 # * performance of a task in the public interest
@@ -53,10 +59,10 @@ IFrame('https://strawpoll.com/embed/kf252h78r', width=700, height=350)
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ### Processing of employee-related data
 #
-# The works council must be informed about the processing of employee data within the framework of co-determination ([Section 87 (1) No. 6 German Works Constitution Act](https://www.gesetze-im-internet.de/betrvg/__87.html)).
+# The workers' council must be informed about the processing of employee data within the framework of co-determination ([Section 87 (1) No. 6 German Works Constitution Act](https://www.gesetze-im-internet.de/betrvg/__87.html)).
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# # Implementation of regualtory requirements in machine learning projects
+# # Implementation of regulatory requirements in machine learning projects
 # https://github.com/mbunse/mlcomops
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
@@ -103,7 +109,7 @@ IFrame('https://strawpoll.com/embed/kf252h78r', width=700, height=350)
 #     * Periodic testing of the AI component for discrimination and other undesirable behavior.
 # * __Model Explainability__:
 #     * Ability to provide information to affected parties on how decisions and predictions were made.
-# * __monitoring__:
+# * __Monitoring__:
 #     * monitoring of the behavior of the AI component
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
@@ -124,6 +130,14 @@ IFrame('https://strawpoll.com/embed/daprodsdy', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "fragment"}
 # [Load data](load_data.pct.py)
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ## Poll
+# https://strawpoll.com/kc8pxhafz
+
+# %% hideCode=true
+from IPython.display import IFrame
+IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Data Versioning, 
@@ -191,11 +205,21 @@ IFrame('https://strawpoll.com/embed/daprodsdy', width=700, height=350)
 #
 # [Call API](call_api.pct.py)
 
+# %% [markdown] slideshow={"slide_type": "slide"}
+# # Monitoring
+#
+# ![dashboard showing distriubtions of models scores, outlier scores, labels and drifts over time](../images/dashboard.png)
+
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Outlier Detection
 # <img style="height:600px;" src="https://i.stack.imgur.com/3Ab7e.jpg" alt="Extrapolation" />
 #
 # [Outlier Detector](outlier_detector.pct.py)
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ## Drift detection
+#
+# [Drift detection](drift_detector.pct.py)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Outlier Detection
