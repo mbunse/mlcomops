@@ -32,9 +32,9 @@ import matplotlib.pyplot as plt
 import os
 
 # %% [markdown]
-# ## Daten einlesen
+# ## Load Data
 #
-# Der [Titanic Datensatz von OpenML](https://www.openml.org/d/40945) wird eingelesen.
+# Load [Titanic data set from OpenML](https://www.openml.org/d/40945).
 
 # %%
 URL = "https://www.openml.org/data/get_csv/16826755/phpMYEkMl"
@@ -62,7 +62,7 @@ data_df.head()
 # | home.dest | Home/Destination
 
 # %% [markdown]
-# Die Spalte `survival` wird als Label gesetzt. Die Spalten `boat` und `body` werden entfernt, da sie direkt mit dem Label verknüpft sind.
+# The column `survival` is set as label. The columns `boat` and `body` are removed, because they are directly linked to the label.
 
 # %%
 model_df = data_df.rename(columns={"survived": "label"})
@@ -70,14 +70,14 @@ model_df = model_df.drop(columns=["boat", "body"])
 model_df.head()
 
 # %% [markdown]
-# Für das Training sollen zunächst nur jüngere Passagiere genutzt werden. Die Verteilung sieht wie folgt aus:
+# Initially, only younger passengers will be used for training. The distribution is as follows:
 
 # %%
 ax = model_df["age"].plot.hist(bins=np.arange(0,100,10))
 ax.set_xlabel("Alter");
 
 # %% [markdown]
-# Alle Personen ab 50 werden in einen "Outlier" Datensatz ausgelagert und nicht für Training, Validierung und Test genutzt.
+# All individuals 50 and over will be offloaded to an "outlier" dataset and not used for training, validation, and testing.
 
 # %%
 outlier_df = model_df[model_df["age"]>=50]
@@ -85,18 +85,18 @@ model_df = model_df[model_df["age"]<50]
 model_df.head()
 
 # %% [markdown]
-# ## Testdatensatz trennen
+# ## Split train and test data set
 #
-# Einen Testdatensatz zurückhalten, der nicht für das Training verwendet wird und erst zum Abschluss für eine finale Modell Überprüfung genutzt wird.
+# Withhold a test data set that will not be used for training and will only be used for a final model check at the end.
 
 # %%
 train_df, test_df = train_test_split(model_df, random_state=12345, test_size=0.2, stratify=model_df["label"])
 len(train_df), len(test_df)
 
 # %% [markdown]
-# ## Daten speichern
+# ## Save data
 #
-# Die DataFrames werden als Pickle ausgeben.
+# The DataFrames are output as a pickle.
 
 # %%
 os.makedirs("../data/interim", exist_ok=True)

@@ -25,7 +25,7 @@
 # * views are my own
 # * no claim to completeness of legal & regulatory requirements
 #
-# ![Disclaimer](https://i.imgflip.com/5gs3cu.jpg)
+# ![Disclaimer](https://i.imgflip.com/5ifrs2.jpg)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Poll

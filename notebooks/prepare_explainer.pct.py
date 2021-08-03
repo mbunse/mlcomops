@@ -15,7 +15,8 @@
 # ---
 
 # %% [markdown]
-# # Explainer vorbereiten
+# # Prepare Explainer
+#
 # ```
 # dvc run -n outlier_model --force -w notebooks -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl -d ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl python outlier_detector.pct.py
 # ```
@@ -59,9 +60,9 @@ list(enumerate(feat_names))
 preprocessor.steps[0][1].transformers_[1][1].steps[1][1].categories_
 
 # %% [markdown]
-# ## Explainer erzeugen
+# ## Create explainer
 #
-# Für die Eklärbarkeit wird [lime](https://github.com/marcotcr/lime) genutzt. [Lime](https://arxiv.org/abs/1602.04938) fitted dabei einen erklärbaren Algorithmus ([Ridge](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)) an die Modellvorhersage für Sample, die der fraglichen Instanz ähnlich sind.
+# For explainability, [lime](https://github.com/marcotcr/lime) is used. [Lime](https://arxiv.org/abs/1602.04938) fitted an explainable algorithm ([Ridge](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Ridge.html)) to the model prediction for samples similar to the instance in question.
 
 # %%
 explainer = LimeTabularExplainer(train_df_tf, feature_names=feat_names, 
@@ -74,7 +75,7 @@ explainer = LimeTabularExplainer(train_df_tf, feature_names=feat_names,
                                 })
 
 # %% [markdown]
-# Die Erklärung am Beispiel eines Test-Datensatzes
+# The explanation using the example of a test data set
 
 # %%
 instance = preprocessor.transform(test_df.drop(columns=["label"]))[0]
@@ -90,7 +91,7 @@ test_df.iloc[0]
 {value: explain for value, explain in explanation.as_list()}
 
 # %% [markdown]
-# ## Speichern
+# ## Save
 
 # %%
 with open("../models/explainer.pkl", "wb") as f:
