@@ -77,6 +77,19 @@ docker-compose -f docker-compose.yml -f docker-compose.modelapi.yml up
 ```
 API: http://localhost:8080/docs
 
+## Debugging container
+```
+docker exec -it mlcomops_openldap_1 /bin/sh
+```
+## Ldap
+```
+ldapsearch -H ldap://localhost:1389 -x -b 'dc=example,dc=org'
+```
+Import realm json see
+https://github.com/bitnami/charts/issues/5178
+
+https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/oauth_provider#keycloak-auth-provider
+https://github.com/bitnami/bitnami-docker-oauth2-proxy
 ## Monitoring
 
 * [Open Grafana](http://localhost:3000)
