@@ -45,3 +45,37 @@ services:
         - 5000:5000
         volumes:
         - ./docker-compose/mlflow/data:/data
+
+    postgresql:
+        image: "docker.io/bitnami/postgresql:11"
+        environment:
+        - ALLOW_EMPTY_PASSWORD=yes
+        - POSTGRESQL_USERNAME=bn_keycloak
+        - POSTGRESQL_DATABASE=bitnami_keycloak
+        volumes:
+        - ./docker-compose/keycloak/postgresql_data:/bitnami/postgresql
+    keycloak:
+        image: docker.io/bitnami/keycloak:latest
+        ports:
+        - "9100:8080"
+        environment:
+        - KEYCLOAK_CREATE_ADMIN_USER=true
+        - KEYCLOAK_AUTH_CACHE_OWNERS_COUNT=3
+        - KEYCLOAK_ADMIN_USER=user
+        - KEYCLOAK_ADMIN_PASSWORD=bitnami
+        - KEYCLOAK_MANAGEMENT_USER=manager
+        - KEYCLOAK_MANAGEMENT_PASSWORD=bitnami1
+        depends_on:
+        - postgresql
+    openldap:
+        image: bitnami/openldap:2
+        ports:
+        - '1389:1389'
+        - '1636:1636'
+        environment:
+        - LDAP_ADMIN_USERNAME=admin
+        - LDAP_ADMIN_PASSWORD=adminpassword
+        - LDAP_USERS=user01,user02
+        - LDAP_PASSWORDS=password1,password2
+        volumes:
+        - ./docker-compose/keycloak/openldap_data:/bitnami/openldap
