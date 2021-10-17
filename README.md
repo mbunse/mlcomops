@@ -90,6 +90,31 @@ https://github.com/bitnami/charts/issues/5178
 
 https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/oauth_provider#keycloak-auth-provider
 https://github.com/bitnami/bitnami-docker-oauth2-proxy
+
+## Keycloak
+http://localhost:9100/
+
+## NGINX
+```
+docker build -t nginx:latest docker-compose/nginx
+```
+
+
+## Label Studio
+```
+docker build -t label-studio:latest docker-compose/label-studio
+```
+http://localhost:9110/
+ 
+## Voila
+```
+docker build -t voila:latest docker-compose/voila
+docker run -p 9120:8888 -v `pwd`/docker-compose/voila/data:/data voila
+```
+Reach voila via oauth2-proxy:
+http://localhost:4180/
+
+
 ## Monitoring
 
 * [Open Grafana](http://localhost:3000)

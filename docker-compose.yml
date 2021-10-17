@@ -46,6 +46,46 @@ services:
         volumes:
         - ./docker-compose/mlflow/data:/data
 
+    label-studio:
+        build: ./docker-compose/label-studio/.
+        ports:
+        - 9110:8080 
+        volumes:
+        - ./docker-compose/label-studio/data:/data
+
+    voila:
+        build: ./docker-compose/voila/.
+        ports:
+        - 9130:8888
+        volumes:
+        - ./docker-compose/voila/data:/data
+    voila-oauth2-proxy:
+        image: bitnami/oauth2-proxy:7
+        # ports: 
+        # - 9120:4180
+        environment:
+        - OAUTH2_PROXY_PROVIDER=keycloak
+        - OAUTH2_PROXY_CLIENT_ID=voila-proxy
+        - OAUTH2_PROXY_CLIENT_SECRET=57979fe9-a787-4b72-b974-b60cec67a9ef
+        - OAUTH2_PROXY_LOGIN_URL=http://localhost:9100/auth/realms/testrealm/protocol/openid-connect/auth
+        - OAUTH2_PROXY_REDEEM_URL=http://localhost:9100/auth/realms/testrealm/protocol/openid-connect/token
+        - OAUTH2_PROXY_PROFILE_URL=http://localhost:9100/auth/realms/testrealm/protocol/openid-connect/userinfo
+        - OAUTH2_PROXY_VALIDATE_URL=http://localhost:9100/auth/realms/testrealm/protocol/openid-connect/userinfo
+        - OAUTH2_PROXY_UPSTREAMS=http://localhost:9130/
+        - OAUTH2_PROXY_REDIRECT_URL=http://localhost:4180/oauth2/callback
+        - OAUTH2_PROXY_EMAIL_DOMAINS=*
+        - OAUTH2_PROXY_SCOPE=email
+        - OAUTH2_PROXY_COOKIE_SECRET=A3ldwwx8j4g4MKnH51jD9g==
+        #- KEYCLOAK_GROUP=<first_allowed_user_group>
+        command: ["--upstream=http://localhost:9130/", "--http-address=0.0.0.0:4180"]
+        network_mode: host
+
+    nginx:
+        build: ./docker-compose/nginx/.
+        volumes:
+        - ./docker-compose/nginx/frontend.conf:/opt/bitnami/nginx/conf/server_blocks/frontend.conf:ro
+        - ./docker-compose/nginx/oauth2.js:/opt/bitnami/nginx/conf/server_blocks/oauth2.js:ro
+
     postgresql:
         image: "docker.io/bitnami/postgresql:11"
         environment:
@@ -67,6 +107,7 @@ services:
         - KEYCLOAK_MANAGEMENT_PASSWORD=bitnami1
         depends_on:
         - postgresql
+
     openldap:
         image: bitnami/openldap:2
         ports:
@@ -75,7 +116,9 @@ services:
         environment:
         - LDAP_ADMIN_USERNAME=admin
         - LDAP_ADMIN_PASSWORD=adminpassword
-        - LDAP_USERS=user01,user02
-        - LDAP_PASSWORDS=password1,password2
+        # - LDAP_USERS=user01,user02
+        # - LDAP_PASSWORDS=password1,password2
+        - LDAP_CUSTOM_LDIF_DIR=/bitnami/ldap_ldif
         volumes:
         - ./docker-compose/keycloak/openldap_data:/bitnami/openldap
+        - ./docker-compose/keycloak/ldap_ldif:/bitnami/ldap_ldif
