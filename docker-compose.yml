@@ -82,6 +82,8 @@ services:
 
     nginx:
         build: ./docker-compose/nginx/.
+        ports:
+        - 9140:80
         volumes:
         - ./docker-compose/nginx/frontend.conf:/opt/bitnami/nginx/conf/server_blocks/frontend.conf:ro
         - ./docker-compose/nginx/oauth2.js:/opt/bitnami/nginx/conf/server_blocks/oauth2.js:ro
