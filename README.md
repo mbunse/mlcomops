@@ -84,6 +84,11 @@ docker exec -it mlcomops_openldap_1 /bin/sh
 ## Ldap
 ```
 ldapsearch -H ldap://localhost:1389 -x -b 'dc=example,dc=org'
+ldapsearch -H ldap://localhost:1389 -x -b 'ou=users,dc=example,dc=org' '(&(cn=readers)(objectClass=groupOfNames))'
+ldapsearch -H ldap://localhost:1389 -x -b 'ou=users,dc=example,dc=org' -s one -a find '(&(cn=readers)(objectClass=groupOfNames))' uid member cn objectclass
+ldapsearch -H ldap://localhost:1389 -x -b 'ou=users,dc=example,dc=org' '(&(objectClass=groupOfNames))'
+ldapsearch -H ldap://localhost:1389 -x -b 'ou=groups,dc=example,dc=org' -s one -a find '(&(objectClass=groupOfNames))' uid member cn objectclass
+
 ```
 Import realm json see
 https://github.com/bitnami/charts/issues/5178
@@ -94,11 +99,36 @@ https://github.com/bitnami/bitnami-docker-oauth2-proxy
 ## Keycloak
 http://localhost:9100/
 
+```
+docker-compose -f docker-compose.keycloak.yml up
+docker-compose up nginx voila-oauth2-proxy
+```
+
+```
+GET /? HTTP/1.1
+Host: localhost:4180
+Cache-Control: max-age=0
+Cookie: _oauth2_proxy_0=sdsdsd; _oauth2_proxy_1=sdsdsdssd
+Upgrade-Insecure-Requests: 1
+X-Forwarded-Access-Token: ey....fN0_QO_S-aVn-az9T-Tkd_hg
+X-Forwarded-Email: user01@localhost
+X-Forwarded-For: 127.0.0.1
+X-Forwarded-Groups: readers,offline_access,uma_authorization,default-roles-testrealm,role:readers,role:offline_access,role:uma_authorization,role:default-roles-testrealm,role:account:manage-account,role:account:manage-account-links,role:account:view-profile
+X-Forwarded-Preferred-Username: user01
+X-Forwarded-User: a4444444-1111-1221-a12a-123232323232
+
+
+a6c71b85cad5
+```
+
 ## NGINX
 ```
 docker build -t nginx:latest docker-compose/nginx
 ```
 
+```
+docker-compose up 
+```
 
 ## Label Studio
 ```

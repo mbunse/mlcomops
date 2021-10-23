@@ -39,8 +39,13 @@ uidNumber: 1001
 gidNumber: 1001
 homeDirectory: /home/user02
 
-# readers, users, example.org
-dn: cn=readers,ou=users,dc=example,dc=org
+# groups, example.org
+dn: ou=groups,dc=example,dc=org
+objectClass: organizationalUnit
+ou: groups
+
+# readers, groups, example.org
+dn: cn=readers,ou=groups,dc=example,dc=org
 cn: readers
 objectClass: groupOfNames
 member: cn=user01,ou=users,dc=example,dc=org
