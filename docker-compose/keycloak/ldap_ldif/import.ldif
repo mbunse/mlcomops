@@ -11,7 +11,6 @@ ou: users
 
 # user01, users, example.org
 dn: cn=user01,ou=users,dc=example,dc=org
-cn: User1
 cn: user01
 sn: Bar1
 objectClass: inetOrgPerson
@@ -26,7 +25,6 @@ homeDirectory: /home/user01
 
 # user02, users, example.org
 dn: cn=user02,ou=users,dc=example,dc=org
-cn: User2
 cn: user02
 sn: Bar2
 objectClass: inetOrgPerson
@@ -35,9 +33,23 @@ objectClass: shadowAccount
 userPassword: password2
 uid: user02
 mail: user02@localhost
-uidNumber: 1001
-gidNumber: 1001
+uidNumber: 1002
+gidNumber: 1002
 homeDirectory: /home/user02
+
+# user03, users, example.org
+dn: cn=user03,ou=users,dc=example,dc=org
+cn: user03
+sn: Bar3
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+userPassword: password2
+uid: user03
+mail: user03@localhost
+uidNumber: 1003
+gidNumber: 1003
+homeDirectory: /home/user03
 
 # groups, example.org
 dn: ou=groups,dc=example,dc=org
@@ -48,5 +60,6 @@ ou: groups
 dn: cn=readers,ou=groups,dc=example,dc=org
 cn: readers
 objectClass: groupOfNames
+objectClass: top
 member: cn=user01,ou=users,dc=example,dc=org
 member: cn=user02,ou=users,dc=example,dc=org

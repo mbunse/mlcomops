@@ -47,7 +47,8 @@ services:
         - ./docker-compose/mlflow/data:/data
 
     label-studio:
-        build: ./docker-compose/label-studio/.
+        #build: ./docker-compose/label-studio/.
+        image: label-studio-headerauth:latest
         ports:
         - 9110:8080 
         volumes:
@@ -81,15 +82,19 @@ services:
         - OAUTH2_PROXY_SET_XAUTHREQUEST=true
         #- KEYCLOAK_GROUP=<first_allowed_user_group>
         command: ["--upstream=http://localhost:9140/", "--http-address=0.0.0.0:4180", "--pass-user-headers=true", "--pass-access-token=true"]
+        # command: ["--http-address=0.0.0.0:4180", "--pass-user-headers=true", "--pass-access-token=true"]
         network_mode: host
+        # extra_hosts:
+        # - "host.docker.internal:host-gateway"
     nginx:
         image: docker.io/bitnami/nginx:1.21
         ports:
-        - 9140:80
+        - 9140:9140
         volumes:
         - ./docker-compose/nginx/voila.conf:/opt/bitnami/nginx/conf/server_blocks/voila.conf:ro
+        # network_mode: host
 
-    # nginx:
-    #     image: docker.io/brndnmtthws/nginx-echo-headers:latest
-    #     ports:
-    #     - 9140:8080 
+    echo:
+        image: docker.io/brndnmtthws/nginx-echo-headers:latest
+        ports:
+        - 9150:8080 

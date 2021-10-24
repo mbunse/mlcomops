@@ -36,5 +36,5 @@ services:
         # - LDAP_PASSWORDS=password1,password2
         - LDAP_CUSTOM_LDIF_DIR=/bitnami/ldap_ldif
         volumes:
-        - ./docker-compose/keycloak/openldap_data:/bitnami/openldap
+        #- ./docker-compose/keycloak/openldap_data:/bitnami/openldap
         - ./docker-compose/keycloak/ldap_ldif:/bitnami/ldap_ldif

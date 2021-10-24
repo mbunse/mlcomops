@@ -102,6 +102,7 @@ http://localhost:9100/
 ```
 docker-compose -f docker-compose.keycloak.yml up
 docker-compose up nginx voila-oauth2-proxy
+docker-compose up nginx voila-oauth2-proxy label-studio
 ```
 
 ```
