@@ -73,6 +73,7 @@ Prerequisite:
 ```
 chmod o+x docker-compose/modelapi/data
 docker-compose build
+docker build -t modelapi --network="host" --build-arg AWS_ACCESS_KEY_ID="minio-access-key" --build-arg AWS_SECRET_ACCESS_KEY="minio-secret-key" .
 docker-compose -f docker-compose.yml -f docker-compose.modelapi.yml up
 ```
 API: http://localhost:8080/docs

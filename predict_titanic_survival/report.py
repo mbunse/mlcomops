@@ -86,14 +86,16 @@ def get_feature_names(transformer, parent_feature_names=None):
             if trans == "drop" or (hasattr(column, "__len__") and not len(column)):
                 continue
             if trans == "passthrough":
-                if hasattr(transformer, "_df_columns"):
-                    if ((not isinstance(column, slice)) and all(isinstance(col, str) for col in column)):
+                if hasattr(transformer, "feature_names_in_"):
+                    if (not isinstance(column, slice)) and all(
+                        isinstance(col, str) for col in column
+                    ):
                         feature_names.extend(column)
                     else:
-                        feature_names.extend(transformer._df_columns[column])
+                        feature_names.extend(transformer.feature_names_in_[column])
                 else:
                     indices = np.arange(transformer._n_features)
-                    feature_names.extend([f'x{i}' for i in indices[column]])
+                    feature_names.extend(["x%d" % i for i in indices[column]])
             else:
                 feature_names.extend(get_feature_names(trans, parent_feature_names=column))
     

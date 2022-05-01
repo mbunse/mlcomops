@@ -41,11 +41,8 @@ from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer, KNNImputer, MissingIndicator
 from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import OrdinalEncoder
 from sklearn import metrics as skm
-
-from eli5.transform import transform_feature_names
 
 from fairlearn.reductions import GridSearch
 from fairlearn.metrics import MetricFrame, selection_rate, false_positive_rate, true_positive_rate, count

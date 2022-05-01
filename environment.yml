@@ -3,9 +3,9 @@ channels:
   - conda-forge
 dependencies:
   - python=3.8
-  - ipykernel=5.5.5
-  - pip=21.1.2
-  - dvc-s3=2.1.0
+  - ipykernel
+  - pip
+  - dvc-s3
   - prometheus-fastapi-instrumentator
   - fastapi
   - uvicorn

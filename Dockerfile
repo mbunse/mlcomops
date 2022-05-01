@@ -1,4 +1,4 @@
-from bitnami/python:3.8
+from bitnami/python:3.8.13
 
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
