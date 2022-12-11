@@ -21,7 +21,7 @@
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # # MLOps
-# ![Technical debt](../images/tech_debt.png)
+# ![hidden technical debt paper](../images/hidden_technical_debt_2015.jpg)
 #
 # [Hidden Technical Debt in Machine Learning Systems by D. Sculley et al. from 2015](https://papers.neurips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems.pdf)
 
@@ -135,12 +135,67 @@ from IPython.display import IFrame
 IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Data Versioning, 
-#
-# e.g. with [DVC](https://dvc.org/)
-# ![DVC](../images/data_code_versioning.png)
+# ## Data Versioning with [DVC](https://dvc.org/)
+# ![DVC_project_versions](../images/dvc_Versions.webp)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
+# ## DVC Pipelines
+# ![DVC Pipeline Example](https://dagshub.com/docs/tutorial/assets/process_and_train_repo.png)
+# Quelle: https://dagshub.com/
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ## DVC Pipelines
+#
+# #### Load data
+#
+# ```
+# python load_data.py
+# ```
+
+# %% [markdown] slideshow={"slide_type": "fragment"}
+# ```
+# dvc run -n load_data --force -o data/raw/output.csv -d load_data.py python load_data.py
+# ```
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ## Pipelines
+# With dvc you can define pipelines to reproduce a model from raw data
+# #### `dvc.yaml`
+
+# %% [markdown]
+# ```yaml
+# stages:
+#   train:
+#     cmd: python train.py
+#     deps:
+#     - data/raw/train_data.csv
+#     outs:
+#     - models/model/
+#
+# ```
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ## Data versions
+#
+# Different versions of the data are linked within the `dvc.lock` file via hashes.
+# ```yaml
+# stages:
+#   load_data:
+#     cmd: python load_data.py
+#     deps:
+#     - path: load_data.py
+#       md5: ddeb3c7968c47788fb055752566e725d
+#       size: 153
+#     outs:
+#     - path: data/raw/output.csv
+#       md5: 3057d4f316405b0a282328d2f9ee5748
+#       size: 551260620
+#   train:
+#      ...
+# ```
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+#
 # ## DVC Data
 #
 # [DVC Remote with Minio](http://localhost:9000/minio/titanic/)
@@ -212,6 +267,124 @@ IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 # ![deploy](../images/deploy.png)
 # [Model API](http://localhost:8080/docs)
 
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ## Model API
+#
+# With [FastAPI](https://fastapi.tiangolo.com/) an API for model can be provided.
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ### Data model for input and output
+#
+# ##### `app.py`
+# ```python
+# from pydantic import BaseModel, Field
+#
+# # Datenmodell der Eingabe
+# class Input(BaseModel):
+#     sentence: str = Field(example="Das ist ein toller Satz.")
+#
+# # Datenmodell der Ausgabe
+# class Survival(BaseModel):
+#     label: str = Field(description="Survival", example="NEGATIVE")
+#     score: float = Field(description="Score", example=0.9526780247688293)
+# ```
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ### API Endpunkt
+#
+# ##### `app.py`
+# ```python
+# from fastapi import FastAPI, Response
+#
+# # Erzeugen der FastAPI Anwendung
+# app = FastAPI(
+#     title="Sentiment Model API",
+#     description="Sentiment Model API",
+#     version="0.1",)
+# ```
+#
+
+# %% [markdown] slideshow={"slide_type": "slide"}
+# ## Monitoring
+#
+# What to watch for?
+#
+# * online vs. offline scores
+# * evaluation metrics
+# * score distributions
+# * feature distribtions
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# # Monitoring
+#
+# Prometheus Client catches model output from header.
+#
+# #### `app.py`
+# ```python
+# # Endpunkt für Prediction
+# @app.post('/predict', response_model=Sentiment, operation_id="predict_post")
+# async def predict(response: Response, input: Input):
+#     pred = sentiment_classifier(input.sentence)[0]
+#     sentiment = Sentiment(**pred)
+#
+#     # Header Monitoring
+#     response.headers["X-model-score"] = str(sentiment.score)
+#     response.headers["X-model-sentiment"] = str(sentiment.label)
+#
+#     return sentiment
+#
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# Define metrics
+#
+# ```python
+# from prometheus_client import Histogram, Counter
+#
+# def model_output(metric_namespace: str = "", metric_subsystem: str = ""):
+#     SCORE = Histogram(
+#         "model_score",
+#         "Predicted score of model",
+#         buckets=(0, .1, .2, .3, .4, .5, .6, .7, .8, .9),
+#         namespace="mlops",
+#         subsystem="model",
+#     )
+#     ...
+# ```
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ```python
+#     ...
+#     SURVIVAL = Counter(
+#         "survival",
+#         "Predicted survival",
+#         namespace="mlops",
+#         subsystem="model",
+#         labelnames=("survival",)        
+#     )
+#     ...
+# ```
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# Read metrics from header
+#
+# ```python
+#     ...
+#     def instrumentation(info) -> None:
+#         if info.modified_handler == "/predict":
+#             model_score = info.response.headers.get("X-model-score")
+#             model_sentiment = info.response.headers.get("X-model-sentiment")
+#             if model_score:
+#                 SCORE.observe(float(model_score))
+#                 SENTIMENT.labels(model_sentiment).inc()
+#
+#     return instrumentation
+# ```
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# # Monitoring
+#
+# ![dashboard showing distriubtions of models scores, outlier scores, labels and drifts over time](../images/dashboard.png)
+
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Monitoring
 #
@@ -222,19 +395,6 @@ IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 # [Grafana](http://localhost:3000)
 #
 # [Call API](call_api.pct.py)
-
-# %% [markdown] slideshow={"slide_type": "subslide"}
-# # Monitoring
-#
-# ![dashboard showing distriubtions of models scores, outlier scores, labels and drifts over time](../images/dashboard.png)
-
-# %% [markdown] slideshow={"slide_type": "subslide"}
-# ### What to watch for?
-#
-# * online vs. offline scores
-# * evaluation metrics
-# * score distributions
-# * feature distribtions
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Outlier Detection
