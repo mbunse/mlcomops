@@ -1,0 +1,5 @@
+[core]
+    remote = minio
+['remote "minio"']
+    url = s3://titanic/dvcrepo
+    endpointurl = http://localhost:9000

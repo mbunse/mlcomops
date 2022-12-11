@@ -1,15 +1,13 @@
 name: mlops
-channels:
-  - conda-forge
 dependencies:
   - python=3.8
-  - ipykernel=5.5.5
-  - pip=21.1.2
-  - dvc-s3=2.1.0
+  - ipykernel
+  - pip
+  - dvc-s3=2.1
   - prometheus-fastapi-instrumentator
   - fastapi
   - uvicorn
-  - scikit-learn
+  - scikit-learn=1.1
   - doit
   - pandas
   - mlflow
@@ -19,6 +17,8 @@ dependencies:
   - lime
   - eli5
   - matplotlib
+  - rise
+  - pathspec=0.9 # fix https://github.com/iterative/dvc/issues/8217
   - pip
   - pip: 
     - openapi-python-client

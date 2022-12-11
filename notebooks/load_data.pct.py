@@ -7,19 +7,17 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python [conda env:.conda-mlops]
+#     display_name: Python [conda env:mlops]
 #     language: python
-#     name: conda-env-.conda-mlops-py
+#     name: conda-env-mlops-py
 # ---
 
 # %% [markdown]
-# # Trainingsdaten aufbereiten
+# # Prepare training data
 #
-# In diesem Notebook werden die Roh-Daten für das Training aufbereitet.
-#
-# DVC Pipeline wurde mit folgendem Befehl eingerichtet:
+# Run the DVC pipeline with the following command:
 # ```
 # dvc run -n load_data --force -o ../data/interim/train_df.pkl -o ../data/interim/test_df.pkl -o ../data/interim/outlier_df.pkl -d load_data.pct.py -w notebooks python load_data.pct.py
 # ```
@@ -27,9 +25,11 @@
 # %%
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import os
+
+# %%
+from sklearn.model_selection import train_test_split
 
 # %% [markdown]
 # ## Load Data

@@ -7,38 +7,31 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python [conda env:.conda-mlops]
+#     display_name: Python [conda env:mlops]
 #     language: python
-#     name: conda-env-.conda-mlops-py
+#     name: conda-env-mlops-py
 # ---
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # MLOps
 #
-# ![MLOps](https://nuernberg.digital/uploads/tx_seminars/praesentation2.jpg)
-
-# %% [markdown] slideshow={"slide_type": "slide"}
-# # ComMLOps
-#
-# <img alt="ComMLOps" src="../images/commlops_venn.png" width="600" />
+# ![MLOps](../images/mlops_venn.jpg)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Disclaimer
+# # MLOps
+# ![Technical debt](../images/tech_debt.png)
 #
-# * views are my own
-# * no claim to completeness of legal & regulatory requirements
-#
-# ![Disclaimer](https://i.imgflip.com/5ifrs2.jpg)
+# [Hidden Technical Debt in Machine Learning Systems by D. Sculley et al. from 2015](https://papers.neurips.cc/paper/5656-hidden-technical-debt-in-machine-learning-systems.pdf)
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Poll
-# https://strawpoll.com/kf252h78r
+# https://strawpoll.com/polls/NoZrLa3aXn3
 
 # %% hideCode=true
 from IPython.display import IFrame
-IFrame('https://strawpoll.com/embed/kf252h78r', width=700, height=350)
+IFrame('https://strawpoll.com/embed/NoZrLa3aXn3', width=700, height=350)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Before the project starts
@@ -61,12 +54,12 @@ IFrame('https://strawpoll.com/embed/kf252h78r', width=700, height=350)
 #
 # The workers' council must be informed about the processing of employee data within the framework of co-determination ([Section 87 (1) No. 6 German Works Constitution Act](https://www.gesetze-im-internet.de/betrvg/__87.html)).
 
-# %% [markdown] slideshow={"slide_type": "slide"}
+# %% [markdown] slideshow={"slide_type": "skip"}
 # # Implementation of regulatory requirements in machine learning projects
 # https://github.com/mbunse/mlcomops
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
-# ## Requirements
+# ## GDPR Requirements
 # [Position paper of the Data Protection Conference on recommended technical and
 # organizational measures for the development and operation
 # of AI systems](https://www.datenschutzkonferenz-online.de/media/en/20191106_positionspapier_kuenstliche_intelligenz.pdf) as of Nov. 2019.
@@ -85,15 +78,17 @@ IFrame('https://strawpoll.com/embed/kf252h78r', width=700, height=350)
 #
 # [Proposal for a Regulation laying down harmonised rules on artificial intelligence](https://digital-strategy.ec.europa.eu/en/library/proposal-regulation-laying-down-harmonised-rules-artificial-intelligence)
 #
-# <img alt="EU risk categories" src="https://ec.europa.eu/info/sites/default/files/ai_pyramid_visual-01.jpg" style="height:400px;"/>
+# <img alt="EU risk categories" src="https://commission.europa.eu/sites/default/files/styles/oe_theme_medium_no_crop/public/2021-04/ai_pyramid_visual-01.jpg" width=700/>
 #
 # High risk e.g.
 # * AI in road traffic
-# * Credit scoring
+# * **Credit scoring**
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## BaFin
 # ![Bafin](../images/bafin_ml_principles.png)
+#
+# New MaRisk (Minimal requirements for risk management) proposal (Sep. 26 2022) from Federal Financial Supervisory Authority (BaFin) includes regulations for models and artifical intelligence used in risk management processes.
 #
 # [Supervisory Principles for Big Data and AI from 6/15/2021](https://www.bafin.de/SharedDocs/Downloads/DE/Aufsichtsrecht/dl_Prinzipienpapier_BDAI.html)
 
@@ -170,11 +165,20 @@ IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 # %% [markdown] slideshow={"slide_type": "slide"}
 # ## Experiment Tracking
 #
-# Experiment Tracking z.B. mit [MLflow](https://mlflow.org/)
+# Experiment Tracking with [MLflow](https://mlflow.org/)
 #
 # [Modell Training](train.pct.py)
 #
 # [MLFlow](http://localhost:5000)
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ### Experiment Tracking with [MLflow](https://mlflow.org/)
+#
+# ```python
+# mlflow.set_tracking_uri("http://localhost:5000")
+# mlflow.sklearn.autolog(log_model_signatures=False, log_models=False)
+# mlflow.set_experiment('New experiment')
+# ```
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # ## Fairness in Machine Learning Projects
@@ -186,13 +190,27 @@ IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 # https://towardsdatascience.com/real-life-examples-of-discriminating-artificial-intelligence-cae395a90070
 #
 # ![Equity](https://miro.medium.com/max/408/1*hntbZ9h50ql9dxoP0FQfVQ.png)
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ### Fairlearn
 #
-# [Modell Training](train.pct.py)
+# The idea behind [fairlearn](https://fairlearn.org/) is based on [Agarwal et al.](https://arxiv.org/pdf/1803.02453.pdf). In short, a Lagrange multiplier is used in a grid search to adjust the weights of individual data points in such a way that the remaining deviations from fairness are weighted more. The classifier that provides the best trade-off between fairness and performance is used. [GridSearch](https://fairlearn.org/v0.5.0/api_reference/fairlearn.reductions.html#fairlearn.reductions.GridSearch) provides non-randomized results and also allows the output of scores.
+#
+# ```python
+# from fairlearn.reductions import ErrorRateParity, GridSearch
+# mitigator = GridSearch(classifier, ErrorRateParity())
+# mitigator.fit(features_train_tf, labels_train, sensitive_features=features_train["sex"])
+# ```
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # ## Explainability
 #
 # [Explainer](prepare_explainer.pct.py)
+
+# %% [markdown] slideshow={"slide_type": "slide"}
+# ## Deploying the model
+# ![deploy](../images/deploy.png)
+# [Model API](http://localhost:8080/docs)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Monitoring
@@ -205,10 +223,18 @@ IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 #
 # [Call API](call_api.pct.py)
 
-# %% [markdown] slideshow={"slide_type": "slide"}
+# %% [markdown] slideshow={"slide_type": "subslide"}
 # # Monitoring
 #
 # ![dashboard showing distriubtions of models scores, outlier scores, labels and drifts over time](../images/dashboard.png)
+
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# ### What to watch for?
+#
+# * online vs. offline scores
+# * evaluation metrics
+# * score distributions
+# * feature distribtions
 
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # ## Outlier Detection
