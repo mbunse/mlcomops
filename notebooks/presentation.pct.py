@@ -33,6 +33,9 @@
 from IPython.display import IFrame
 IFrame('https://strawpoll.com/embed/NoZrLa3aXn3', width=700, height=350)
 
+# %% [markdown] slideshow={"slide_type": "subslide"}
+# Code available under https://github.com/mbunse/mlcomops
+
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Before the project starts
 #
@@ -162,7 +165,7 @@ IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 # With dvc you can define pipelines to reproduce a model from raw data
 # #### `dvc.yaml`
 
-# %% [markdown]
+# %% [raw]
 # ```yaml
 # stages:
 #   train:
@@ -383,7 +386,7 @@ IFrame('https://strawpoll.com/embed/kc8pxhafz', width=700, height=350)
 # %% [markdown] slideshow={"slide_type": "subslide"}
 # # Monitoring
 #
-# ![dashboard showing distriubtions of models scores, outlier scores, labels and drifts over time](../images/dashboard.png)
+# ![dashboard showing distriubtions of models scores, outlier scores, labels and drifts over time](dashboard.png)
 
 # %% [markdown] slideshow={"slide_type": "slide"}
 # # Monitoring
