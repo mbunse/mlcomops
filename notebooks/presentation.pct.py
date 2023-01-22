@@ -15,7 +15,7 @@
 # ---
 
 # %% [markdown] slideshow={"slide_type": "slide"}
-# # MLOps
+# # ComMLOps
 #
 # ![MLOps](../images/mlops_venn.jpg)
 
