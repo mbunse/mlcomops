@@ -1,23 +1,23 @@
 name: mlops
 channels:
+  - defaults
   - conda-forge
 dependencies:
-  - python=3.8
-  - ipykernel=5.5.5
-  - pip=21.1.2
-  - dvc-s3=2.1.0
-  - prometheus-fastapi-instrumentator
-  - fastapi
-  - uvicorn
-  - scikit-learn
-  - doit
-  - pandas
-  - mlflow
-  - minio
+  - dvc-s3=2.1
   - fairlearn
-  - cloudpickle
+  - fastapi
+  - ipykernel
   - lime
   - matplotlib
+  - minio
+  - mlflow
+  - pandas
+  - pip
+  - prometheus-fastapi-instrumentator
+  - python=3.10
+  - scikit-learn=1.1
+  - uvicorn
+#  - rise
   - pip
   - pip: 
     - openapi-python-client

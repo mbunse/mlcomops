@@ -15,10 +15,9 @@
 
 # %% [markdown]
 # # Drift Detector
-# https://github.com/SeldonIO/alibi-detect/blob/master/examples/cd_chi2ks_adult.ipynb
 # ```
-# dvc run -n drift_model --force -w notebooks -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../data/interim/outlier_df.pkl -d ../models/model.pkl -d ../models/feat_names.json -o ../models/drift_detector.pkl python drift_detector.pct.py"```
-#
+# dvc run -n drift_model --force -w notebooks -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../data/interim/outlier_df.pkl -d ../models/model.pkl -d ../models/feat_names.json -o ../models/drift_detector.pkl python drift_detector.pct.py
+# ```
 
 # %%
 import os

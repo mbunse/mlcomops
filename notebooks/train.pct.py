@@ -8,18 +8,18 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.11.4
+#       jupytext_version: 1.13.7
 #   kernelspec:
-#     display_name: Python [conda env:.conda-mlops]
+#     display_name: Python [conda env:mlops]
 #     language: python
-#     name: conda-env-.conda-mlops-py
+#     name: conda-env-mlops-py
 # ---
 
 # %% [markdown]
-# # Modell Training
-# Das Modell wird nach `model/model.pkl` persistiert.
+# # Model Training
+# The model is persisted to `model/model.pkl`.
 #
-# dvc Pipeline anlegen:
+# Create dvc pipeline:
 # ```
 # dvc run -n train --force -d ../data/interim/train_df.pkl -d train.pct.py -M ../models/score.json -o ../models/model.pkl -o ../models/feat_names.json -w notebooks python train.pct.py
 # ```
@@ -54,8 +54,8 @@ sys.path.append("../")
 from predict_titanic_survival.data_prep import CustomFeatures
 from predict_titanic_survival.report import report, get_feature_names
 
-# %% [markdown]
-# ## Einlesen der Daten
+# %% [markdown] hideOutput=false hideCode=true
+# ## Read Data
 
 # %%
 filepath = "../data/interim/train_df.pkl"
@@ -70,13 +70,13 @@ features_train, features_valid, labels_train, labels_valid = train_test_split(
 features_train.shape, features_valid.shape, labels_train.shape, labels_valid.shape
 
 # %% [markdown]
-# ## Modell-Pipeline definieren
+# ## Define model pipeline
 #
-# Es werden nur die numerischen Spalten `sibsp`, `parch`, `fare` und `age` sowie die kategorischen Spalten `embarked`, `sex` und `pclass` genutzt.
+# Only the numeric columns `sibsp`, `parch`, `fare` and `age` and the categorical columns `embarked`, `sex` and `pclass` are used.
 #
-# Die kategorischen Spalten werden Ordinal kodiert, da dies z.B. für die Behandlung im Rahmen der Drift-Detektion später vorteilhaft ist und Entscheidungsbaum-basierte Klassifikatoren hiermit auch keine Schwierigkeiten haben.
+# The categorical columns are coded ordinally, since this is advantageous e.g. for the treatment in the context of the drift detection later and decision tree-based classifiers have no difficulties with this either.
 #
-# Bevor die Daten in den Klassifikator laufen, werden zuletzt noch fehlende Werte in der Pipeline imputiert.
+# Before the data is run into the classifier, missing values are imputed in the pipeline.
 
 # %%
 pipeline = Pipeline([
@@ -95,7 +95,7 @@ pipeline = Pipeline([
 ])
 
 # %% [markdown]
-# Die Präprozessor-Pipeline wird nun gefittet und die Daten testweise transformiert.
+# The preprocessor pipeline is now fitted and the data is transformed on a test basis.
 
 # %%
 preprocessor = Pipeline(pipeline.steps[:-1])
@@ -103,7 +103,7 @@ X_transformed = preprocessor.fit_transform(features_train, labels_train)
 X_transformed.shape
 
 # %% [markdown]
-# Nun können die Namen der Präprozessierten Spalten abgeleiteten werden.
+# Now the names of the preprocessed columns can be derived.
 
 # %%
 feat_names = get_feature_names(pipeline)
@@ -111,7 +111,7 @@ assert len(feat_names)==X_transformed.shape[1]
 feat_names
 
 # %% [markdown]
-# Welche Parameter hat die Pipeline?
+# What are the parameters of the pipeline?
 
 # %%
 list(pipeline.get_params().keys())
@@ -119,7 +119,7 @@ list(pipeline.get_params().keys())
 # %% [markdown]
 # ## Experiment Tracking
 #
-# Tracking der Experimente mittels mlflow
+# Experiment tracking woth [mlflow](https://mlflow.org/).
 
 # %%
 mlflow.set_tracking_uri("http://localhost:5000")
@@ -127,7 +127,7 @@ mlflow.sklearn.autolog(log_model_signatures=False, log_models=False)
 mlflow.set_experiment('New experiment')
 
 # %% [markdown]
-# Die Run-Daten werden direkt in den im Tracking Server hinterlegten S3 Bucket abgelegt. Daher werden hier die entsprechenden Zugangsdaten benötigt.
+# The run data is stored directly in the S3 bucket stored in the tracking server. Therefore, the corresponding access data is required here.
 
 # %%
 os.environ["AWS_ACCESS_KEY_ID"]='minio-access-key'
@@ -135,7 +135,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"]='minio-secret-key'
 os.environ["MLFLOW_S3_ENDPOINT_URL"]='http://localhost:9000'
 
 # %% [markdown]
-# GridSearch zur Hyperparameter-Optimierung durchführen.
+# Perform GridSearch for hyperparameter optimization.
 
 # %%
 param_grid = {
@@ -150,10 +150,10 @@ with mlflow.start_run() as run:
     grid_search.fit(features_train, labels_train, **{"clf__sample_weight": sample_weight})
 
 # %% [markdown]
-# Die Ergebnisse können nun in MLFlow betrachtet werden: [MLFlow](http://localhost:5000)
+# The results can now be viewed in [MLFlow](http://localhost:5000)
 
 # %% [markdown]
-# ## Fairness Metriken bestimmen
+# ## Calculate Fairness Metrics
 
 # %%
 y_pred = grid_search.best_estimator_.predict(features_valid)
@@ -183,7 +183,7 @@ metric_frame.by_group.plot.bar(
 metric_frame.by_group
 
 # %% [markdown]
-# Die Idee hinter [fairlearn](https://fairlearn.org/) basiert auf [Agarwal et al.](https://arxiv.org/pdf/1803.02453.pdf). Kurz gesprochen wird in einer Grid Suche über einen Lagrange Multiplikator die Gewichte einzelner Datenpunkte so angepasst, dass die jeweils verbliebenen Abweichungen von der Fairness jeweils mehr gewichtet werden. Der Klassifikator, der dabei die besten Trade-Off aus Fairness und Performance liefert wird verwendet. [GridSearch](https://fairlearn.org/v0.5.0/api_reference/fairlearn.reductions.html#fairlearn.reductions.GridSearch) liefert nicht-randomisierte Ergebnisse und erlaubt auch die Ausgabe von Scores.
+# The idea behind [fairlearn](https://fairlearn.org/) is based on [Agarwal et al.](https://arxiv.org/pdf/1803.02453.pdf). In short, a Lagrange multiplier is used in a grid search to adjust the weights of individual data points in such a way that the remaining deviations from fairness are weighted more. The classifier that provides the best trade-off between fairness and performance is used. [GridSearch](https://fairlearn.org/v0.5.0/api_reference/fairlearn.reductions.html#fairlearn.reductions.GridSearch) provides non-randomized results and also allows the output of scores.
 
 # %%
 from fairlearn.reductions import ErrorRateParity, GridSearch
@@ -209,22 +209,22 @@ with mlflow.start_run() as fairness_run:
     mlflow.log_metrics(scores)
 
 # %% [markdown]
-# ### Details der Mitigation
+# ### Mitigation details
 #
-# Folgendes Grid wird verwendet.
+# The following grid is used.
 
 # %%
 mitigator.lambda_vecs_
 
 # %% [markdown]
-# Folgender Lambda Wert lieferte den gemäß Tradeoff besten Klassifikator.
+# The following lambda value provided the best classifier according to the tradeoff.
 
 # %%
 mitigator.best_idx_
 
 
 # %% [markdown]
-# Der Tradeoff nimmt folgende Werte an:
+# The tradeoff takes the following values:
 
 # %%
 def loss_fct(i):
@@ -233,7 +233,7 @@ def loss_fct(i):
 {idx: loss_fct(idx) for idx in mitigator.lambda_vecs_.columns}
 
 # %% [markdown]
-# ## Metriken nach Mitigation
+# ## Metrics after Mitigation
 
 # %%
 metrics = {
@@ -260,7 +260,7 @@ metric_frame.by_group.plot.bar(
 metric_frame.by_group
 
 # %% [markdown]
-# ## Auf allen Daten Trainieren
+# ## Train on all Data
 
 # %%
 mlflow.sklearn.autolog(disable=True)
@@ -278,7 +278,7 @@ mitigator.fit(features_tf, labels, sensitive_features=features["sex"])
 pipeline = Pipeline(preprocessor.steps + [("clf", mitigator)])
 
 # %% [markdown]
-# ## Ausgaben speichern
+# ## Save Output
 #
 # Model speichern
 
@@ -288,14 +288,14 @@ with open("../models/model.pkl", "wb") as f:
     cloudpickle.dump(pipeline, f)
 
 # %% [markdown]
-# Metrik speichern
+# Save metrics
 
 # %%
 with open("../models/score.json", "w") as f:
     json.dump(scores, f)
 
 # %% [markdown]
-# Feature Namen speichern
+# Save feature names
 
 # %%
 with open("../models/feat_names.json", "w") as f:

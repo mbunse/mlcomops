@@ -17,7 +17,7 @@
 # %% [markdown]
 # # Outlier Detector
 # ```
-# dvc run -n outlier_detector --force -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl -w notebooks python outlier_detector.pct.py
+# dvc run -n outlier_detector --force -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl -d ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl -w notebooks python outlier_detector.pct.py
 # ```
 
 # %%
@@ -38,14 +38,14 @@ from sklearn.preprocessing import OneHotEncoder
 from joblib import load
 
 # %% [markdown]
-# Daten laden
+# Load data
 
 # %%
 train_df = pd.read_pickle("../data/interim/train_df.pkl")
 test_df = pd.read_pickle("../data/interim/test_df.pkl")
 
 # %% [markdown]
-# Pipeline laden
+# Load pipeline
 
 # %%
 pipeline = load("../models/model.pkl")
@@ -64,16 +64,16 @@ categorical_names={
 }
 
 # %% [markdown]
-# [Verschiedene Verfahren](https://scikit-learn.org/stable/modules/outlier_detection.html#overview-of-outlier-detection-methods) erlauben die Detektion von Outliern.
+# [Various methods](https://scikit-learn.org/stable/modules/outlier_detection.html#overview-of-outlier-detection-methods) allow the detection of outliers.
 #
-# Mit Hilfe eines [Isolation Forest](https://scikit-learn.org/stable/modules/outlier_detection.html#isolation-forest) sollen Outlier identifiziert werden. Die Idee hinter dem Isolation Forest ist, alle Datensätze im mehreren Bäumen durch zufällige Splits anhand der Feature in einzelne Blätter aufzuteilen. Outlier benötigen dann durchschnittliche kürzere Pfade um isoliert zu werden.
+# An [Isolation Forest](https://scikit-learn.org/stable/modules/outlier_detection.html#isolation-forest) is used to identify outliers. The idea behind the Isolation Forest is to split all records in the multiple trees into individual leaves by random splits based on the feature. Outliers then require average shorter paths to be isolated.
 
 # %%
 od = Pipeline(preprocessor.steps + [("sd", StandardScaler()), ("od", IsolationForest(random_state=12345, contamination=0.02))])
 od.fit(train_df.drop(columns=["label"]))
 
 # %% [markdown]
-# Hier funktioniert eine [Ein-Klassen-Support-Vector-Maschine](https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html#sklearn.svm.OneClassSVM) besser. Diese sucht nach einer Hyperebene, um alle bekannten Datenpunkte einzugrenzen. Der Outlier Score ist dann die Entfernung zu diese Hyperebene.
+# This is where a [one-class support vector machine](https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html#sklearn.svm.OneClassSVM) works better. This looks for a hyperplane to narrow down all known data points. The outlier score is then the distance to this hyperplane.
 
 # %%
 od = Pipeline(preprocessor.steps + [("sd", StandardScaler()), 
@@ -106,7 +106,7 @@ ax.set_xlabel("Index")
 ax.legend()
 
 # %% [markdown]
-# Generieren von Datenpunkte, um den Feature Raum abzurastern.
+# Generate data points to scan the feature space.
 
 # %%
 sibsp, parch, fare, age, embarked, sex, pclass = np.meshgrid(
@@ -133,7 +133,7 @@ Z = od_short.decision_function(np.c_[
 Z = Z.reshape(age.shape)
 
 # %% [markdown]
-# Dartstellung der Entscheidungskontur in der Ebene Alter/Ticketgebühr.
+# Presentation of the decision contour in the age/ticket fee plane.
 
 # %%
 fig, ax = plt.subplots()
@@ -169,7 +169,7 @@ ax.set_xlabel("Age")
 ax.set_ylabel("Fare")
 
 # %% [markdown]
-# Outlier Vorhersage (-1: Outlier)
+# Outlier prediction (-1: Outlier)
 
 # %%
 od.predict(train_df.drop(columns=["label"]).sample(10))
