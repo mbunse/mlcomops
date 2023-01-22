@@ -1,24 +1,23 @@
 name: mlops
+channels:
+  - defaults
+  - conda-forge
 dependencies:
-  - python=3.8
-  - ipykernel
-  - pip
   - dvc-s3=2.1
-  - prometheus-fastapi-instrumentator
-  - fastapi
-  - uvicorn
-  - scikit-learn=1.1
-  - doit
-  - pandas
-  - mlflow
-  - minio
   - fairlearn
-  - cloudpickle
+  - fastapi
+  - ipykernel
   - lime
-  - eli5
   - matplotlib
-  - rise
-  - pathspec=0.9 # fix https://github.com/iterative/dvc/issues/8217
+  - minio
+  - mlflow
+  - pandas
+  - pip
+  - prometheus-fastapi-instrumentator
+  - python=3.10
+  - scikit-learn=1.1
+  - uvicorn
+#  - rise
   - pip
   - pip: 
     - openapi-python-client

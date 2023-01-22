@@ -17,7 +17,7 @@
 # %% [markdown]
 # # Outlier Detector
 # ```
-# dvc run -n outlier_detector --force -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl -w notebooks python outlier_detector.pct.py
+# dvc run -n outlier_detector --force -d ../data/interim/train_df.pkl -d ../data/interim/test_df.pkl -d ../models/feat_names.json -d ../models/model.pkl -d ../data/interim/outlier_df.pkl -o ../models/outlier_detector.pkl -w notebooks python outlier_detector.pct.py
 # ```
 
 # %%

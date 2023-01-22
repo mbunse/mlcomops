@@ -1,0 +1,40 @@
+name: mlops
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - dvc=2.36.0
+  - dvc-s3=2.21.0
+  - fairlearn=0.8.0
+  - fastapi=0.89.1
+  - ipykernel=6.19.2
+  - ipython=8.7.0
+  - lime=0.2.0.1
+  - minio=7.1.13
+  - mlflow=2.1.1
+  - numpy=1.23.5
+  - numpy-base=1.23.5
+  - pandas=1.5.2
+  - pip=22.3.1
+  - prometheus-fastapi-instrumentator=5.8.1
+  - python=3.10.9
+  - scikit-learn=1.2.0
+  - uvicorn=0.20.0
+  - vine=5.0.0
+  - voluptuous=0.13.1
+  - wcwidth=0.2.5
+  - websocket-client=1.4.2
+  - werkzeug=2.2.2
+  - wheel=0.37.1
+  - wrapt=1.14.1
+  - xz=5.2.10
+  - yaml=0.2.5
+  - yarl=1.8.2
+  - zc.lockfile=2.0
+  - zeromq=4.3.4
+  - zfp=0.5.5
+  - zipp=3.11.0
+  - zlib=1.2.13
+  - zstd=1.5.2
+  - pip:
+      - openapi-python-client==0.13.1
