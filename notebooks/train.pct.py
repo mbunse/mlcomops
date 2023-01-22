@@ -8,11 +8,11 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.13.7
+#       jupytext_version: 1.14.4
 #   kernelspec:
-#     display_name: Python [conda env:mlops]
+#     display_name: Python 3 (ipykernel)
 #     language: python
-#     name: conda-env-mlops-py
+#     name: python3
 # ---
 
 # %% [markdown]
@@ -52,7 +52,7 @@ from fairlearn.metrics import MetricFrame, selection_rate, false_positive_rate, 
 import sys
 sys.path.append("../")
 from predict_titanic_survival.data_prep import CustomFeatures
-from predict_titanic_survival.report import report, get_feature_names
+from predict_titanic_survival.report import report
 
 # %% [markdown] hideOutput=false hideCode=true
 # ## Read Data
@@ -94,6 +94,9 @@ pipeline = Pipeline([
     ("clf", GradientBoostingClassifier(random_state=1234))
 ])
 
+# %%
+pipeline
+
 # %% [markdown]
 # The preprocessor pipeline is now fitted and the data is transformed on a test basis.
 
@@ -106,7 +109,7 @@ X_transformed.shape
 # Now the names of the preprocessed columns can be derived.
 
 # %%
-feat_names = get_feature_names(pipeline)
+feat_names = pipeline[:-1].get_feature_names_out()
 assert len(feat_names)==X_transformed.shape[1]
 feat_names
 
