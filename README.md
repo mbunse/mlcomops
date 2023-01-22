@@ -9,9 +9,7 @@
 
 After checkout, first create and activate the conda environment:
 ```
-git clone https://github.com/datanizing/datascienceday.git
-cd datascienceday
-cd 08_MLOps
+git clone https://github.com/mbunse/mlcomops.git
 conda env create -f environment.yml
 conda activate mlops
 ```
