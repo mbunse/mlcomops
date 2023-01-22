@@ -3,7 +3,7 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - dvc-s3=2.1
+  - dvc-s3=2.21
   - fairlearn
   - fastapi
   - ipykernel
@@ -15,9 +15,10 @@ dependencies:
   - pip
   - prometheus-fastapi-instrumentator
   - python=3.10
-  - scikit-learn=1.1
+  - scikit-learn=1.2
   - uvicorn
-#  - rise
+  - jupyter
+  - rise
   - pip
   - pip: 
     - openapi-python-client
